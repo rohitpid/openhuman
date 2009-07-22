@@ -1,0 +1,304 @@
+/* This is the default css file that is used to set layout and theming */
+
+.fg-button { outline: 0; margin:0 4px 0 0; padding: 0.1em 0.2em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
+.fg-button .ui-icon { position: absolute; top: 50%; margin-top: -8px; left: 50%; margin-left: -8px; }
+
+.fg-button-icon-left { padding-left: 1.2em; }
+.fg-button-icon-right { padding-right: 1.2em; }
+.fg-button-icon-left .ui-icon { right: auto; left: 0.2em; margin-left: 0; }
+.fg-button-icon-right .ui-icon { left: auto; right: 0.2em; margin-left: 0; }
+button.fg-button .ui-icon{ left: -1.2em;}
+
+.fg-buttonset { float:left;}
+.fg-buttonset .fg-button { float: left; }
+
+.fg-toolbar { padding: 0.2em; margin: 0; width:75%; }
+.fg-toolbar .fg-buttonset { margin-left: auto; margin-right:auto; padding-left: 1px; }
+.fg-toolbar .fg-button { font-size: 1em; }
+
+
+#zoom_label
+{
+	position: absolute;
+	top: 190px;
+	left: 0px;
+}
+
+#scale_label
+{
+	position: absolute;
+	top: 190px;
+	left: 50px;
+}
+
+#rotate_label
+{
+	position: absolute;
+	top: 190px;
+	left: 115px;
+}
+
+#pan_label
+{
+	position: absolute;
+	top: 190px;
+	left: 220px;
+}
+
+#tb_selected {
+	border:0;
+	height: 25px;
+	width: 300px;
+	font-size: 12pt;
+	font: default;
+	position: relative;
+	left: 100px;
+}
+
+
+#demo
+{
+	position: relative;
+	height: 200px;
+}
+
+#indicator
+{
+	position: absolute;
+	top: 62px;
+	left: 138px;
+	width: 11px;
+	height: 11px;
+	background-image: url(select.gif);
+	cursor: move;
+	overflow: hidden;
+}
+
+#pan_up
+{
+	position: absolute;
+	left: 225;
+	top: 80;
+	height: 20px;
+	width: 20px;
+}
+
+#pan_down
+{
+	position: absolute;
+	left: 225;
+	top: 125;
+	height: 20px;
+	width: 20px;
+}
+
+#pan_left
+{
+	position: absolute;
+	left: 200;
+	top: 102;
+	height: 20px;
+	width: 20px;
+}
+
+#pan_right
+{
+	position: absolute;
+	left: 246;
+	top: 102;
+	height: 20px;
+	width: 20px;
+}
+
+#rot_up
+{
+	position: absolute;
+	left: 133;
+	top: 78;
+	height: 20px;
+	width: 20px;
+}
+
+#rot_down
+{
+	position: absolute;
+	left: 133;
+	top: 130;
+	height: 20px;
+	width: 20px;
+}
+
+#rot_left
+{
+	position: absolute;
+	left: 105;
+	top: 102;
+	height: 20px;
+	width: 20px;
+}
+
+#rot_right
+{
+	position: absolute;
+	left: 160;
+	top: 102;
+	height: 20px;
+	width: 20px;
+}
+
+
+span.invisible
+{
+	visibility: hidden;
+}
+
+#rotatebutton
+{
+	height: 100px;
+	width: 100px;
+	background-image: url(circularbutton7.png);
+	position: relative;
+/*	left: 110px; */
+	top: 20px;
+	display: inline-block;
+}
+
+#panbutton
+{
+	height: 75px;
+	width: 75px;
+	background-image: url(circularbutton6.png);
+	position: relative;
+/*	left: 220px; */
+	top: 5px;
+	display: inline-block;
+}
+
+
+#zoomscroller
+{
+	height:120px; 
+	float:left;
+	margin:15px;
+}
+
+#scalingscroller
+{
+	height:120px;
+	float: left;
+	margin:15px;
+	display: inline-block;
+}
+
+#instructions_box
+{
+	background: hsla(210, 100%, 75%, 0.5);
+	width: 260px;
+	height: 270px;
+	display: none;
+}
+
+#container
+{
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	color: #333;
+	border: 1px solid gray;
+	line-height: 110%;
+	min-width: 200px;
+	margin: 0 auto -35px;
+}
+
+#top
+{
+	padding: 8px;
+	background-color: #ddd;
+	border-bottom: 1px solid gray;
+}
+
+#top h1
+{
+	padding: 0;
+	margin: 0;
+}
+
+#leftnav
+{
+	float: left;
+	width: 130px;
+	height: 70%;
+/*	margin: 0 auto; */
+	padding: 16px;
+}
+
+#rightnav
+{
+/*	float: right; */
+	top: 30px;
+	width: auto;
+	position: absolute;
+	right:0;
+/*	margin: 0 auto; */
+	z-index:2;
+	padding: 16px;
+	background-color:transparent;
+}
+
+#content
+{
+/*	position:relative; */
+/*	float: left;
+	min-width: 604px;
+	min-height: 600px; */
+	height: auto;
+	width: auto;
+	margin-left: 130px;
+/*	width: 40%;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray; */
+	padding: 5px;
+	z-index:0;
+}
+
+#o3d
+{
+	width:65%;
+	height:75%;
+	position:relative;
+	display: inline-block;
+	z-index:0;
+}
+
+
+#push
+{
+	height: -7px;
+}
+
+#footer
+{
+	clear: both;
+	margin: 0;
+	padding: .5em;
+	color: #333;
+	background-color: #ddd;
+	border-top: 1px solid gray;
+	border-left: 1px solid gray;
+	height: 16px;
+}
+
+#amolink
+{
+	position: absolute;
+	float: right;
+	margin-left: 200px;
+}
+
+body {
+overflow-x: hidden;
+overflow-y: hidden;
+}
+
+/*#leftnav p, #rightnav p { margin: 0 0 16px 0; }
+#content h2 { margin: 0 0 .8px 0; } */
