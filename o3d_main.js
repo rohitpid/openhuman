@@ -120,7 +120,8 @@ function initStep2(clientElements)
 	o3djs.event.addEventListener(g_o3dElement, 'wheel', scrollMe);
 	o3djs.event.addEventListener(g_o3dElement, 'keypress', buttonRotate);
   
-	g_client.setRenderCallback(onRender);  
+	g_client.setRenderCallback(onRender); 
+
 }
 
 function doload()
@@ -165,7 +166,7 @@ function loadFile(context, path)
 
 			var diag = g_math.length(g_math.subVector(bbox.maxExtent,bbox.minExtent));
 
-			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1.5 * diag]);
+			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1 * diag]);
 			g_camera.nearPlane = diag / 1000;
 			g_camera.farPlane = diag * 10;
 			setClientSize();
@@ -290,11 +291,7 @@ function drag(e)
 		var rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
 		g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
 
-		/*		
-		var m = g_root.localMatrix;
-		g_math.matrix4.setUpper3x3(m, g_thisRot);
-		g_root.localMatrix = m;
-		*/		
+			
 
 		for(i=0;i<oH_obj.length;i++)
 		{
@@ -368,22 +365,24 @@ function onRender()
  */
 function uninit() 
 {
+		
 	if (g_client)
 	{
 	g_client.cleanup();
 	}
+	
 }
 
 function pan(x,y,z)
 {
-	//g_root.translate(x,y,z);
+
 	for(i=0;i<oH_obj.length;i++)
 	oH_obj[i].translate(x,y,z);	
 }
 
 function scale(scaleValue)
 {	
-	//g_root.scale(scaleValue,scaleValue,scaleValue);
+
 	for(i=0;i<oH_obj.length;i++)
 	oH_obj[i].scale(scaleValue,scaleValue,scaleValue);
 }
@@ -454,17 +453,17 @@ function buttonRotation(angle,axis)
 {
 		
 	if (axis == 0) {
-		//g_root.quaternionRotate(g_quaternions.rotationX(-angle));
+
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationX(-angle));
 	}
 	else if (axis == 1) {
-		//g_root.quaternionRotate(g_quaternions.rotationY(angle));
+
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationY(angle));
 	}
 	else {
-		//g_root.quaternionRotate(g_quaternions.rotationZ(angle));
+
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationZ(angle));
 	}
@@ -517,8 +516,11 @@ function hide()
 		//g_selectedInfo.shapeInfo.parent.transform.visible = true;
 		g_selectedInfo.shapeInfo.parent.transform.translate(100,100,100);
 		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name+" hidden";
-		removedObjects.push(g_selectedInfo);
+		removedObjects.push(g_selectedInfo.shapeInfo.parent.transform);
 	}
+	
+	//Remove the rayinfo after the hide so that it doesnt muck up things later
+	//g_selectedInfo = null;
 }
 
 function show()
@@ -526,8 +528,8 @@ function show()
 	if(removedObjects.length > 0)
 	{
 		var obj = removedObjects.pop();
-		obj.shapeInfo.parent.transform.translate(-100,-100,-100);
-		g_loadingElement.innerHTML = obj.shapeInfo.parent.transform.name+" shown";
+		obj.translate(-100,-100,-100);
+		g_loadingElement.innerHTML = obj.name+" shown";
 	}
 }
 
@@ -538,7 +540,7 @@ function hideall()
 		oH_obj[i].translate(100,100,100);
 		removedObjects.push(oH_obj[i]);
 	}
-	
+	g_loadingElement.innerHTML = "All objects hidden";
 }
 
 function showall()
@@ -548,16 +550,27 @@ function showall()
 		for(i=0;removedObjects.length !=0;)
 		{
 			var obj=removedObjects.pop();
-			obj.shapeInfo.parent.transform.translate(-100,-100,-100);
 			obj.translate(-100,-100,-100);
-			g_loadingElement.innerHTML = obj.shapeInfo.parent.transform.name+" shown";
+			
 		}
+		g_loadingElement.innerHTML = "All objects shown";
 	}
+	
 }
 
 function resetView()
 {
-	g_camera.target = [0, 0, 0];
-	g_camera.eye = [0, 0, 5];
+	var bbox = o3djs.util.getBoundingBoxOfTree(g_client.root);
+
+	g_camera.target = g_math.lerpVector(bbox.minExtent, bbox.maxExtent, 0.5);
+
+	var diag = g_math.length(g_math.subVector(bbox.maxExtent,bbox.minExtent));
+
+	g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1 * diag]);
+	g_camera.nearPlane = diag / 1000;
+	g_camera.farPlane = diag * 10;
+	setClientSize();
 	updateCamera();
+	updateProjection();
+	showall()
 }
