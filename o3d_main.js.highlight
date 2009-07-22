@@ -36,6 +36,10 @@ var g_camera = {
   nearPlane:0.1
 };
 var g_dragging = false;
+var g_flashTimer = 0;
+var g_highlightMaterial;
+var g_highlightShape;
+var g_selectedInfo;
 
 //global oH variables
 var oH_obj;
@@ -50,7 +54,7 @@ var removedObjects = [];
  */
 function init()
 {
-	o3djs.util.makeClients(initStep2,"LargeGeometry","FloatingPointTextures");
+	o3djs.util.makeClients(initStep2,"LargeGeometry");
 }
 
 /**
@@ -87,14 +91,27 @@ function initStep2(clientElements)
 	g_client = g_o3dElement.client;
 
 	g_mainPack = g_client.createPack();
-
+	g_pack = g_client.createPack();
 
 	// Create the render graph for a view.
 	g_viewInfo = o3djs.rendergraph.createBasicView(
 		g_mainPack,
 		g_client.root,
 		g_client.renderGraphRoot
-	);
+	);	
+
+	  // Create a material for highlighting.
+  g_highlightMaterial = g_pack.createObject('Material');
+  g_highlightMaterial.drawList = g_viewInfo.performanceDrawList;
+  var effect = g_pack.createObject('Effect');
+  o3djs.effect.loadEffect(effect, 'shaders/solid-color.shader');
+  g_highlightMaterial.effect = effect;
+  effect.createUniformParameters(g_highlightMaterial);
+  // Setup a state to bring the lines forward.
+  var state = g_pack.createObject('State');
+  state.getStateParam('PolygonOffset2').value = -1.0;
+  state.getStateParam('FillMode').value = g_o3d.State.WIREFRAME;
+  g_highlightMaterial.state = state;
 
 	g_lastRot = g_math.matrix4.identity();
 	g_thisRot = g_math.matrix4.identity();
@@ -352,15 +369,60 @@ function setClientSize()
 	}
 }
 
+function unSelectAll() {
+  if (g_selectedInfo) {
+    // Remove it from the transform of the selected object.
+    g_selectedInfo.shapeInfo.parent.transform.removeShape(g_highlightShape);
+    // Remove everything related to it.
+    o3djs.shape.deleteDuplicateShape(g_highlightShape, g_pack);
+    g_highlightShape = null;
+    g_selectedInfo = null;
+  }
+}
+
+function select(pickInfo) {
+  unSelectAll();
+  if (pickInfo) {
+    g_selectedInfo = pickInfo;
+    // make a copy of the selected shape so we can use it to highlight.
+    g_highlightShape = o3djs.shape.duplicateShape(
+        g_pack,
+        g_selectedInfo.shapeInfo.shape,
+        'highlight_');
+    // Set all of it's elements to use the highlight material.
+    var elements = g_highlightShape.elements;
+    for (var ee = 0; ee < elements.length; ee++) {
+      elements[ee].material = g_highlightMaterial;
+    }
+
+    // Add it to the same transform
+    g_selectedInfo.shapeInfo.parent.transform.addShape(g_highlightShape);
+    g_flashTimer = 0.0;  // make it change color immediately.
+  }
+}
+
+
+
+
 /**
  *  Called every frame.
  */
-function onRender() 
+function onRender(renderEvent) 
 {
 	// If we don't check the size of the client area every frame we don't get a
 	// chance to adjust the perspective matrix fast enough to keep up with the
 	// browser resizing us.
 	setClientSize();
+
+  g_flashTimer += renderEvent.elapsedTime;
+  g_flashTimer = g_flashTimer % 0.5;
+  if (g_selectedInfo) {
+    if (g_flashTimer < 0.25) {
+      g_highlightMaterial.getParam('color').value = [1, 1, 1, 1];
+    } else {
+      g_highlightMaterial.getParam('color').value = [0, 0, 0, 1];
+    }
+  }
 }
 
 /**
@@ -480,6 +542,7 @@ function pick(e)
 	g_client.width,
 	g_client.height
 	);
+	unSelectAll();
 	
 	// Update the entire tree in case anything moved.
 	g_treeInfo.update();
@@ -547,10 +610,9 @@ function showall()
 	{
 		for(i=0;removedObjects.length !=0;)
 		{
-			var obj=removedObjects.pop();
+			obj=removedObjects.pop();
 			obj.shapeInfo.parent.transform.translate(-100,-100,-100);
-			obj.translate(-100,-100,-100);
-			g_loadingElement.innerHTML = obj.shapeInfo.parent.transform.name+" shown";
+			g_loadingElement.innerHTML = obj.name+" shown";
 		}
 	}
 }
