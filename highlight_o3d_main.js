@@ -29,7 +29,7 @@ o3djs.require('o3djs.scene');
 o3djs.require('o3djs.picking');
 
 // global o3d variables
-var g_root;
+var g_root = [];
 var g_o3d;
 var g_math;
 var g_quaternions;
@@ -52,15 +52,17 @@ var g_camera = {
   nearPlane:0.1
 };
 var g_dragging = false;
+var g_flashTimer = 0;
+var g_highlightMaterial;
+var g_highlightShape;
+var g_selectedInfo;
 
 //global oH variables
 var oH_obj;
 var oH_numObj;
 var oH_OBJECTS_LIST;
 var oH_ASSET_PATH;
-var oH_loadingFirstFile=true;	g_camera.target = [0, 0, 0];
-	g_camera.eye = [0, 0, 5];
-	updateCamera();
+var oH_loadingFirstFile=true;	
 var removedObjects = [];
 
 /**
@@ -81,7 +83,7 @@ function initStep2(clientElements)
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
 	oH_OBJECTS_LIST = new Array  (
-		//"skull.o3dtgz",
+		"skull.o3dtgz",
 		"head.o3dtgz",
 		"eye.o3dtgz",
 		"mandible.o3dtgz",
@@ -95,10 +97,7 @@ function initStep2(clientElements)
 		"hypothalamus.o3dtgz"
 	);
 
-	//var path = window.location.href;
-	//var index = path.lastIndexOf('/');
-	//path = path.substring(0, index+1) + 'assets/oH/skull.o3dtgz';
-	//var url = document.getElementById("url").value = path;
+
 	g_loadingElement = document.getElementById('loading');
 	
 	g_o3dElement = clientElements[0];
@@ -108,13 +107,27 @@ function initStep2(clientElements)
 	g_client = g_o3dElement.client;
 
 	g_mainPack = g_client.createPack();
+	g_pack = g_client.createPack();
 
 	// Create the render graph for a view.
 	g_viewInfo = o3djs.rendergraph.createBasicView(
 		g_mainPack,
 		g_client.root,
 		g_client.renderGraphRoot
-	);
+	);	
+
+	  // Create a material for highlighting.
+  g_highlightMaterial = g_pack.createObject('Material');
+  g_highlightMaterial.drawList = g_viewInfo.performanceDrawList;
+  var effect = g_pack.createObject('Effect');
+  o3djs.effect.loadEffect(effect, 'shaders/solid-color.shader');
+  g_highlightMaterial.effect = effect;
+  effect.createUniformParameters(g_highlightMaterial);
+  // Setup a state to bring the lines forward.
+  var state = g_pack.createObject('State');
+  state.getStateParam('PolygonOffset2').value = -1.0;
+  state.getStateParam('FillMode').value = g_o3d.State.WIREFRAME;
+  g_highlightMaterial.state = state;
 
 	g_lastRot = g_math.matrix4.identity();
 	g_thisRot = g_math.matrix4.identity();
@@ -133,7 +146,8 @@ function initStep2(clientElements)
 	updateCamera();
 
 	doload();
-	
+
+	o3djs.event.addEventListener(g_o3dElement, 'mousedown', pick);
 	o3djs.event.addEventListener(g_o3dElement, 'mousedown', startDragging);
 	o3djs.event.addEventListener(g_o3dElement, 'mousemove', drag);
 	o3djs.event.addEventListener(g_o3dElement, 'mouseup', stopDragging);
@@ -145,42 +159,21 @@ function initStep2(clientElements)
 
 function doload()
 {
-	if (g_root)
-	{
-		g_root.parent = null;
-		g_root = null;
-	}
+
 	if (g_pack)
 	{
 		g_pack.destroy();
 		g_pack = null;
 	}
-	//var url = document.getElementById('url').value;
-	var path = window.location.href;
-	var index = path.lastIndexOf('/');
-	path = path.substring(0, index+1);
-	g_root = loadFile(g_viewInfo.drawContext, path+'assets/oH/skull.o3dtgz');
-	//oH_numObj = 0;
+	
+	oH_numObj = 0;
+	
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{
 		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
 		oH_numObj++;
 	}
-}
-
-function setClientSize() {
-  var newWidth  = parseInt(g_client.width);
-  var newHeight = parseInt(g_client.height);
-
-  if (newWidth != g_o3dWidth || newHeight != g_o3dHeight) {
-    g_o3dWidth = newWidth;
-    g_o3dHeight = newHeight;
-
-    updateProjection();
-
-    // Sets a new area size for arcball.
-    g_aball.setAreaSize(g_o3dWidth, g_o3dHeight);
-  }
+	g_root=oH_obj;
 }
 
 function loadFile(context, path)
@@ -274,52 +267,35 @@ function loadFile(context, path)
 		}
 	}
 
-	g_pack = g_client.createPack();
+	
 	if(oH_loadingFirstFile)
 	{
-		// Create a new transform for the loaded file
-		var parent = g_pack.createObject('Transform');
-		parent.parent = g_client.root;
-		if (path != null)
-		{
-			g_loadingElement.innerHTML = "Loading: " + path;
-			//enableInput(false);
-			try
-			{
-				o3djs.scene.loadScene(g_client, g_pack, parent, path, callback);	  
-			} 
-			catch (e)
-			{
-				//enableInput(true);
-				g_loadingElement.innerHTML = "loading failed : " + e;
-			}
-		}
-		updateInfo();
-		oH_loadingFirstFile=false;
-		return parent;
+		g_pack = g_client.createPack();
+		oH_loadingFirstFile=false;		
 	}
-	else
+	
+	// Create a new transform for the loaded file
+	var mesh = g_pack.createObject('Transform');
+	mesh.parent = g_client.root;
+	if (path != null)
 	{
-		// Create a new transform for the loaded file
-		var mesh = g_pack.createObject('Transform');
-		mesh.parent = g_client.root;
-		if (path != null)
+		g_loadingElement.innerHTML = "Loading: " + path;
+		//enableInput(false);
+		try
 		{
-			g_loadingElement.innerHTML = "Loading: " + path;
-			//enableInput(false);
-			try
-			{
-				o3djs.scene.loadScene(g_client, g_pack, mesh, path, callback);
-			}
-			catch(e)
-			{
-				//enableInput(true);
-				g_loadingElement.innerHTML = "loading failed : " + e;
-			}
+			o3djs.scene.loadScene(g_client, g_pack, mesh, path, callback);
 		}
-		updateInfo();
-		return mesh;
+		catch(e)
+		{
+			//enableInput(true);
+			g_loadingElement.innerHTML = "loading failed : " + e;
+		}
 	}
+	
+	updateInfo();
+
+	return mesh;
+	
 }
 
 function updateInfo()
@@ -348,10 +324,12 @@ function drag(e)
 		var rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
 		g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
 
+		/*		
 		var m = g_root.localMatrix;
 		g_math.matrix4.setUpper3x3(m, g_thisRot);
 		g_root.localMatrix = m;
-	
+		*/		
+
 		for(i=0;i<oH_obj.length;i++)
 		{
 			var meshRot = oH_obj[i].localMatrix;
@@ -408,15 +386,60 @@ function setClientSize()
 	}
 }
 
+function unSelectAll() {
+  if (g_selectedInfo) {
+    // Remove it from the transform of the selected object.
+    //g_selectedInfo.shapeInfo.parent.transform.removeShape(g_highlightShape);
+    // Remove everything related to it.
+    //o3djs.shape.deleteDuplicateShape(g_highlightShape, g_pack);
+    g_highlightShape = null;
+    g_selectedInfo = null;
+  }
+}
+
+function select(pickInfo) {
+  unSelectAll();
+  if (pickInfo) {
+    g_selectedInfo = pickInfo;
+    // make a copy of the selected shape so we can use it to highlight.
+    g_highlightShape = o3djs.shape.duplicateShape(
+        g_pack,
+        g_selectedInfo.shapeInfo.shape,
+        'highlight_');
+    // Set all of it's elements to use the highlight material.
+    var elements = g_highlightShape.elements;
+    for (var ee = 0; ee < elements.length; ee++) {
+      elements[ee].material = g_highlightMaterial;
+    }
+
+    // Add it to the same transform
+    g_selectedInfo.shapeInfo.parent.transform.addShape(g_highlightShape);
+    g_flashTimer = 0.0;  // make it change color immediately.
+  }
+}
+
+
+
+
 /**
  *  Called every frame.
  */
-function onRender() 
+function onRender(renderEvent) 
 {
 	// If we don't check the size of the client area every frame we don't get a
 	// chance to adjust the perspective matrix fast enough to keep up with the
 	// browser resizing us.
 	setClientSize();
+
+  g_flashTimer += renderEvent.elapsedTime;
+  g_flashTimer = g_flashTimer % 0.5;
+  if (g_selectedInfo) {
+    if (g_flashTimer < 0.25) {
+      //g_highlightMaterial.getParam('color').value = [1, 1, 1, 1];
+    } else {
+     // g_highlightMaterial.getParam('color').value = [0, 0, 0, 1];
+    }
+  }
 }
 
 /**
@@ -432,14 +455,14 @@ function uninit()
 
 function pan(x,y,z)
 {
-	g_root.translate(x,y,z);
+	//g_root.translate(x,y,z);
 	for(i=0;i<oH_obj.length;i++)
 	oH_obj[i].translate(x,y,z);	
 }
 
 function scale(scaleValue)
 {	
-	g_root.scale(scaleValue,scaleValue,scaleValue);
+	//g_root.scale(scaleValue,scaleValue,scaleValue);
 	for(i=0;i<oH_obj.length;i++)
 	oH_obj[i].scale(scaleValue,scaleValue,scaleValue);
 }
@@ -508,45 +531,19 @@ function buttonRotate(e)
 
 function buttonRotation(angle,axis)
 {
-	/*
-	var rotationQuat;
-	g_lastRot = g_thisRot;
-	if(axis==0)
-	rotationQuat = g_quaternions.rotationX(angle);
-	else if(axis==1)
-	rotationQuat = g_quaternions.rotationY(angle);
-	else
-	rotationQuat = g_quaternions.rotationZ(angle);
-	
-	var rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
-	g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
-
-
-	var m = g_root.localMatrix;
-	g_math.matrix4.setUpper3x3(m, g_thisRot);
-	g_root.localMatrix = m;
-	
-	for(i=0;i<oH_obj.length;i++)
-	{
-		var meshRot = oH_obj[i].localMatrix;
-		g_math.matrix4.setUpper3x3(meshRot, g_thisRot);
-		oH_obj[i].localMatrix = meshRot;
 		
-	}
-	*/
-	
 	if (axis == 0) {
-		g_root.quaternionRotate(g_quaternions.rotationX(-angle));
+		//g_root.quaternionRotate(g_quaternions.rotationX(-angle));
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationX(-angle));
 	}
 	else if (axis == 1) {
-		g_root.quaternionRotate(g_quaternions.rotationY(angle));
+		//g_root.quaternionRotate(g_quaternions.rotationY(angle));
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationY(angle));
 	}
 	else {
-		g_root.quaternionRotate(g_quaternions.rotationZ(angle));
+		//g_root.quaternionRotate(g_quaternions.rotationZ(angle));
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationZ(angle));
 	}
@@ -562,6 +559,7 @@ function pick(e)
 	g_client.width,
 	g_client.height
 	);
+	unSelectAll();
 	
 	// Update the entire tree in case anything moved.
 	g_treeInfo.update();
@@ -615,22 +613,12 @@ function show()
 
 function hideall()
 {
-/*	for(var i = 0; i<oH_obj.length;)
+	for (var i = 0; i<oH_obj.length;i++)
 	{
-		oH_obj[i].transform.translate(100,100,100);
-		g_loadingElement.innerHTML = objects[i].shapeInfo.parent.transform.name+" hidden";
-		removedObjects.push(objects[i]);
-	}*/
-
-	//since after each iteration we remove an object, we use this strange
-	//loop structure as incrementing i is not necessary.
-/*	var objects = g_pack.objects;
-	for (var i = 0; i < objects.length;)
-	{
-		objects[i].shapeInfo.parent.transform.translate(100,100,100);
-		g_loadingElement.innerHTML = objects[i].shapeInfo.parent.transform.name+" hidden";
-		removedObjects.push(objects[i]);
-	}*/
+		oH_obj[i].translate(100,100,100);
+		removedObjects.push(oH_obj[i]);
+	}
+	
 }
 
 function showall()
@@ -641,7 +629,7 @@ function showall()
 		{
 			obj=removedObjects.pop();
 			obj.shapeInfo.parent.transform.translate(-100,-100,-100);
-			g_loadingElement.innerHTML = obj.shapeInfo.parent.transform.name+" shown";
+			g_loadingElement.innerHTML = obj.name+" shown";
 		}
 	}
 }

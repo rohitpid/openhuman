@@ -1,3 +1,18 @@
+/*
+ * Copyright 2009 Rohit Pidaparthi
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Author: Rohit Pidaparthi <rohitpid@gmail.com>
+ *
+ */
+
 /* This is the default css file that is used to set layout and theming */
 
 .fg-button { outline: 0; margin:0 4px 0 0; padding: 0.1em 0.2em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
