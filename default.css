@@ -1,18 +1,3 @@
-/*
- * Copyright 2009 Rohit Pidaparthi
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Author: Rohit Pidaparthi <rohitpid@gmail.com>
- *
- */
-
 /* This is the default css file that is used to set layout and theming */
 
 .fg-button { outline: 0; margin:0 4px 0 0; padding: 0.1em 0.2em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
@@ -241,7 +226,7 @@ span.invisible
 #leftnav
 {
 	float: left;
-	width: 130px;
+	width: 150px;
 	height: 70%;
 /*	margin: 0 auto; */
 	padding: 16px;
@@ -268,18 +253,18 @@ span.invisible
 	min-height: 600px; */
 	height: auto;
 	width: auto;
-	margin-left: 130px;
+	margin-left: 150px;
 /*	width: 40%;
 	border-left: 1px solid gray;
 	border-right: 1px solid gray; */
-	padding: 5px;
+	padding: 16px;
 	z-index:0;
 }
 
 #o3d
 {
-	width:65%;
-	height:75%;
+	width:60%;
+	height:60%;
 	position:relative;
 	display: inline-block;
 	z-index:0;

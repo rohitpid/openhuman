@@ -1,19 +1,4 @@
-/*
- * Copyright 2009 Rohit Pidaparthi
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Author: Rohit Pidaparthi <rohitpid@gmail.com>
- *
- */
-
-$(function() {
+ $(function() {
 	$("a#dialog_hotkeys").toggle(function() {
 		$("#instructions_box").slideDown(1000);
 	}, function() {
@@ -182,7 +167,8 @@ $(function() {
 	showall();
 	});
 	$("#reset").click(function(){
-	resetView();
+	cam.setPosition([0,0,10]);
+	cam.setLookAtPoint([0,0,0]);
 	showall();
 	});
 });

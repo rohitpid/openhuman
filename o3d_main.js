@@ -1,23 +1,3 @@
-/*
- * Copyright 2009 Rohit Pidaparthi
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Author: Rohit Pidaparthi <rohitpid@gmail.com>
- *
- */
-
-/**  This is the o3d version of OpenHuman
- *
- */
-
-// import all relevant o3d libraries
 o3djs.require('o3djs.util');
 o3djs.require('o3djs.math');
 o3djs.require('o3djs.quaternions');
@@ -64,8 +44,11 @@ var removedObjects = [];
 var flashing;
 var flashTimer = 0;
 var flashShape;
+
 var flashDURATION = 3000;
 var flashINTERVAL = 500;
+var flashCounter  = 0;
+
 var flashMode = -1;
 var flashOrigColor;
 var flashedThisInterval;
@@ -74,6 +57,7 @@ var g_highlightShape;
 
 
 var flashType	= "COLOR";	//Change this to "MESH" if you want mesh highlighting
+							//"COLOR" for color highlighting
 var highlightMeshTransform;
 
 /**
@@ -81,7 +65,7 @@ var highlightMeshTransform;
  */
 function init()
 {
-	o3djs.util.makeClients(initStep2,"LargeGeometry","FloatingPointTextures");
+	o3djs.util.makeClients(initStep2,"LargeGeometry");
 }
 
 /**
@@ -90,12 +74,12 @@ function init()
  */
 function initStep2(clientElements)
 {
-	oH_obj = new Array();
+	
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
 	oH_OBJECTS_LIST = new Array  (
 		"skull.o3dtgz",
-		//"head.o3dtgz",
+		"head.o3dtgz",
 		"eye.o3dtgz",
 		"mandible.o3dtgz",
 		"thalamus.o3dtgz",
@@ -183,10 +167,12 @@ function doload()
 	{
 		g_pack.destroy();
 		g_pack = null;
+		oH_obj = null;
+		
 	}
 	
 	oH_numObj = 0;
-	
+	oH_obj = new Array();
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{
 		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
@@ -218,7 +204,7 @@ function loadFile(context, path)
 
 			var diag = g_math.length(g_math.subVector(bbox.maxExtent,bbox.minExtent));
 
-			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1 * diag]);
+			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1.5 * diag]);
 			g_camera.nearPlane = diag / 1000;
 			g_camera.farPlane = diag * 10;
 			setClientSize();
@@ -415,13 +401,13 @@ function onRender(renderEvent)
 	// If we don't check the size of the client area every frame we don't get a
 	// chance to adjust the perspective matrix fast enough to keep up with the
 	// browser resizing us.
-	//setClientSize();
+	setClientSize();
 	
 	if( flashing && flashTimer <= flashDURATION )
 	{
 			
 			flashTimer = flashTimer + renderEvent.elapsedTime*1000;
-			
+			/*
 			if ((flashTimer % 2*flashINTERVAL) < flashINTERVAL && flashedThisInterval==false ) {
 				flashMode = -flashMode;
 				
@@ -436,34 +422,61 @@ function onRender(renderEvent)
 			{
 				flashedThisInterval = false;
 			}
+			*/
+
+			if( flashedThisInterval == false )
+			{
+				flashMode = -flashMode;
+				
+				if(flashType == "COLOR")				
+				highlight(flashObject, flashMode);
+				else
+				highlightMesh(flashMode);
+				
+				flashedThisInterval = true;
+				flashCounter++;
+				
+				
+			}
+			else if( flashedThisInterval == true  && flashTimer > flashINTERVAL*flashCounter )
+			{
+				
+				flashedThisInterval = false;
+				
 			
+			}
+
 	}
 	else
 	{
-			if (flashOrigColor) {
+			
+				if (flashing) {
+				//This condition occurs only when the time for flashing runs off with the 
+				// flashing flag still true.				
 				
-				//Turn off flashing
-				flashing = false;
-				
-				//Reset counter
-				flashTimer = 0.0;
-				
-				if (flashType == "COLOR") {
-					//We need to restore the object to its original brightness if needed
-					highlight(flashObject, -1);
+					if (flashType == "COLOR") {
+						if (flashOrigColor) {
+							//We need to restore the object to its original brightness if needed
+							highlight(flashObject, -1);
+						}
+					}
+					else {
+						//Here we need to remove duplicated mesh once the highlighting is done
+						if (highlightMeshTransform) 
+							highlightMeshTransform.removeShape(g_highlightShape);
+					}
+					flashMode = -1;
+					
+					//Turn off flashing
+					flashing = false;
+					
+					//Reset counter
+					flashTimer   = 0.0;
+					flashCounter = 0;
+					//Remove orig Color
+					flashOrigColor = null;
 				}
-				else
-				{
-					//Here we need to remove duplicated mesh once the highlighting is done
-					if(highlightMeshTransform)
-					highlightMeshTransform.removeShape(g_highlightShape);
-				}
-				flashMode = -1;
-				
-				//Remove orig Color
-				flashOrigColor = null;
-				
-			}
+			
 	}
 }
 
@@ -476,6 +489,7 @@ function uninit()
 		
 	if (g_client)
 	{
+	oH_loadingFirstFile=true;
 	g_client.cleanup();
 	}
 	
@@ -581,25 +595,33 @@ function buttonRotation(angle,axis)
 function pick(e)
 {
 	
-	//Disable any current highlighting in progress
-	flashing = false;
-	//Reset counter
-	flashTimer = 0.0;
-	if (flashType == "COLOR") {
-		//We need to restore the object to its original brightness if needed
-		highlight(flashObject, -1);
-	}
-	else
-	{
-		//Here we need to remove duplicated mesh once the highlighting is done
-		if(highlightMeshTransform)
-		highlightMeshTransform.removeShape(g_highlightShape);
-	}
-	flashMode = -1;
-	//Remove orig Color
-	flashOrigColor = null;
-	flashObject	   = null;
-	
+	if (flashing) {
+				//This condition occurs only when the time for flashing runs off with the 
+				// flashing flag still true.				
+				
+					if (flashType == "COLOR") {
+						if (flashOrigColor) {
+							//We need to restore the object to its original brightness if needed
+							highlight(flashObject, -1);
+						}
+					}
+					else {
+						//Here we need to remove duplicated mesh once the highlighting is done
+						if (highlightMeshTransform) 
+							highlightMeshTransform.removeShape(g_highlightShape);
+					}
+					flashMode = -1;
+					
+					//Turn off flashing
+					flashing = false;
+					
+					//Reset counter
+					flashTimer = 0.0;
+					flashCounter = 0;
+
+					//Remove orig Color
+					flashOrigColor = null;
+				}
 		
 	var worldRay = o3djs.picking.clientPositionToWorldRay(
 	e.x,
@@ -664,7 +686,7 @@ function highlight(model_shape,mode)
 	var element_list = model_shape.elements;
     for (var i = 0; i < element_list.length; i++) {
      	
-		var mat_rgba = element_list[i].material.getParam('diffuse').value;
+		var mat_rgba = element_list[i].material.getParam('ambient').value;
 	  	
 		
 		
@@ -689,11 +711,11 @@ function highlight(model_shape,mode)
 				mat_rgba = hsvToRgb(mat_hsva[0], mat_hsva[1], mat_hsva[2]);
 				
 				//Assign these values to element's material			
-				element_list[i].material.getParam('diffuse').value = [mat_rgba[0] / 256, mat_rgba[1] / 256, mat_rgba[2] / 256, alpha];
+				element_list[i].material.getParam('ambient').value = [mat_rgba[0] / 256, mat_rgba[1] / 256, mat_rgba[2] / 256, alpha];
 			}
 			
 			else{
-				element_list[i].material.getParam('diffuse').value = flashOrigColor;
+				element_list[i].material.getParam('ambient').value = flashOrigColor;
 			}
 		}
 	  
@@ -730,7 +752,7 @@ function setupHighlightMeshMaterial(g_selectedMesh)
 	
 	// Add it to the same transform
 	highlightMeshTransform = g_selectedMesh.shapeInfo.parent.transform;
-    highlightMeshTransform.addShape(g_highlightShape);
+   	highlightMeshTransform.addShape(g_highlightShape);
 	
 }
 
