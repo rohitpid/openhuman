@@ -56,7 +56,7 @@ var flashedThisInterval;
 var g_highlightShape;
 var origMaterial;
 
-var flashType	= "MESH";	//Change this to "MESH" if you want mesh highlighting
+var flashType	= "COLOR";	//Change this to "MESH" if you want mesh highlighting
 							//"COLOR" for color highlighting
 var highlightMeshTransform;
 
@@ -707,7 +707,10 @@ function highlight(model_shape,mode)
 				
 				//Increase brightness of the object by 50% of however more possible
 				//Or decrease it by the same amount based on the value of mode
-				mat_hsva[2] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.5;
+				mat_hsva[2] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
+				mat_hsva[0] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
+				mat_hsva[1] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
+				mat_hsva[3] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.7;
 				
 				//Convert back to RGB			
 				mat_rgba = hsvToRgb(mat_hsva[0], mat_hsva[1], mat_hsva[2]);
