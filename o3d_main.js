@@ -204,7 +204,7 @@ function loadFile(context, path)
 
 			var diag = g_math.length(g_math.subVector(bbox.maxExtent,bbox.minExtent));
 
-			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1.5 * diag]);
+			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1.0 * diag]);
 			g_camera.nearPlane = diag / 1000;
 			g_camera.farPlane = diag * 10;
 			setClientSize();
