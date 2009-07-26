@@ -54,9 +54,9 @@ var flashOrigColor;
 var flashedThisInterval;
 
 var g_highlightShape;
+var origMaterial;
 
-
-var flashType	= "COLOR";	//Change this to "MESH" if you want mesh highlighting
+var flashType	= "MESH";	//Change this to "MESH" if you want mesh highlighting
 							//"COLOR" for color highlighting
 var highlightMeshTransform;
 
@@ -156,8 +156,8 @@ function initStep2(clientElements)
  	 state.getStateParam('PolygonOffset2').value = -1.0;
  	 state.getStateParam('FillMode').value = g_o3d.State.WIREFRAME;
 	 g_highlightMaterial.state = state;
-	
-	
+	 origMaterial = new Array();
+	 g_highlightShape = null;
 }
 
 function doload()
@@ -461,9 +461,8 @@ function onRender(renderEvent)
 						}
 					}
 					else {
-						//Here we need to remove duplicated mesh once the highlighting is done
-						if (highlightMeshTransform) 
-							highlightMeshTransform.removeShape(g_highlightShape);
+						if(g_highlightShape)
+						highlightMesh(-1);
 					}
 					flashMode = -1;
 					
@@ -475,6 +474,7 @@ function onRender(renderEvent)
 					flashCounter = 0;
 					//Remove orig Color
 					flashOrigColor = null;
+					g_highlightShape = null;
 				}
 			
 	}
@@ -607,8 +607,8 @@ function pick(e)
 					}
 					else {
 						//Here we need to remove duplicated mesh once the highlighting is done
-						if (highlightMeshTransform) 
-							highlightMeshTransform.removeShape(g_highlightShape);
+						if(g_highlightShape)
+						highlightMesh(-1);
 					}
 					flashMode = -1;
 					
@@ -621,6 +621,7 @@ function pick(e)
 
 					//Remove orig Color
 					flashOrigColor = null;
+					g_highlightShape = null;
 				}
 		
 	var worldRay = o3djs.picking.clientPositionToWorldRay(
@@ -638,10 +639,11 @@ function pick(e)
 	
 	if (pickInfo) 
 	{
+
+		g_selectedInfo = pickInfo;
+		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
+
 		if (flashType == "COLOR") {
-			
-			g_selectedInfo = pickInfo;
-			g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
 			
 			flashObject = pickInfo.shapeInfo.shape;
 			flashing = true;
@@ -727,35 +729,54 @@ function highlightMesh(mode)
 {
 	     	
 	if(mode == 1){
-		 g_highlightMaterial.getParam('color').value = [1, 1, 1, 1];
+		 highlightMeshMaterial();
 	}
 	else{
-		 g_highlightMaterial.getParam('color').value = [0, 0, 0, 1];
+		restoreMeshMaterial();
 	}
 	
 }
 
 function setupHighlightMeshMaterial(g_selectedMesh)
 {
-	// make a copy of the selected shape so we can use it to highlight.
-  	g_highlightShape = o3djs.shape.duplicateShape(
-      											  g_pack,
-       											  g_selectedMesh.shapeInfo.shape,
-        										  'highlight_');
-							  
+	
+	g_highlightShape =  g_selectedMesh.shapeInfo.shape;
+	g_highlightMaterial.getParam('color').value = [0.992, 1.000, 0.329, 1];					  
     // Set all of it's elements to use the highlight material.
     var elements = g_highlightShape.elements;
     for (var ee = 0; ee < elements.length; ee++) {
+	origMaterial[ee] = elements[ee].material;
       elements[ee].material = g_highlightMaterial;
     }
 	
 	
-	// Add it to the same transform
-	highlightMeshTransform = g_selectedMesh.shapeInfo.parent.transform;
-   	highlightMeshTransform.addShape(g_highlightShape);
-	
 }
 
+function highlightMeshMaterial()
+{
+	
+	if(g_highlightShape){	
+	var elements =  g_highlightShape.elements;
+   	 for (var ee = 0; ee < elements.length; ee++) {
+		
+   		elements[ee].material = g_highlightMaterial;
+    	 }
+	}
+
+}
+
+
+function restoreMeshMaterial()
+{	
+	// Restore all of it's elements to use the highlight material.
+	if(g_highlightShape){	
+   	 var elements =  g_highlightShape.elements;
+   	 for (var ee = 0; ee < elements.length; ee++) {
+		
+   		elements[ee].material = origMaterial[ee];
+    	  }
+	}
+}
 
 function hide()
 {
