@@ -83,7 +83,7 @@ function initStep2(clientElements)
 		"eye.o3dtgz",
 		"mandible.o3dtgz",
 		"thalamus.o3dtgz",
-		"cerebralcortex.o3dtgz",
+		//"cerebralcortex.o3dtgz",
 		"cerebellum.o3dtgz",
 		"corpuscallosum.o3dtgz",
 		"medulla_oblongata.o3dtgz",
@@ -707,14 +707,14 @@ function highlight(model_shape,mode)
 				
 				//Increase brightness of the object by 50% of however more possible
 				//Or decrease it by the same amount based on the value of mode
-				//mat_hsva[2] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
-				//mat_hsva[0] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
-				//mat_hsva[1] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
-				//mat_hsva[3] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.7;
-				mat_hsva[0] = 0.992;
-				mat_hsva[1] = 1.000;
-				mat_hsva[2] = 0.329;
-				mat_hsva[3] = 1;
+				mat_hsva[2] = mat_hsva[2] + mode * (100 - mat_hsva[2]) * 0.3;
+				mat_hsva[0] = mat_hsva[0] + mode * (100 - mat_hsva[0]) * 0.3;
+				mat_hsva[1] = mat_hsva[1] + mode * (100 - mat_hsva[1]) * 0.3;
+				mat_hsva[3] = mat_hsva[3] + mode * (100 - mat_hsva[3]) * 0.7;
+				//mat_hsva[0] = 0.162;
+				//mat_hsva[1] = 0.592;
+				//mat_hsva[2] = 1.000;
+				//mat_hsva[3] = 1;
 				//0.992, 1.000, 0.329
 				//Convert back to RGB			
 				mat_rgba = hsvToRgb(mat_hsva[0], mat_hsva[1], mat_hsva[2]);
