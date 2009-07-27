@@ -714,7 +714,7 @@ function highlight(model_shape,mode)
 				mat_hsva[0] = 0.992;
 				mat_hsva[1] = 1.000;
 				mat_hsva[2] = 0.329;
-				mat_hsva[3] = 1;
+				mat_hsva[3] = 0.5;
 				//0.992, 1.000, 0.329
 				//Convert back to RGB			
 				mat_rgba = hsvToRgb(mat_hsva[0], mat_hsva[1], mat_hsva[2]);
