@@ -83,7 +83,7 @@ function initStep2(clientElements)
 		"eye.o3dtgz",
 		"mandible.o3dtgz",
 		"thalamus.o3dtgz",
-		//"cerebralcortex.o3dtgz",
+		"cerebralcortex.o3dtgz",
 		"cerebellum.o3dtgz",
 		"corpuscallosum.o3dtgz",
 		"medulla_oblongata.o3dtgz",
