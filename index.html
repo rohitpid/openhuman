@@ -22,16 +22,10 @@
 	<script type="application/javascript" src="js/jquery-1.3.2.min.js" ></script>
 	<script type="application/javascript" src="js/jquery-ui-1.7.2.custom.min.js" ></script>
 	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" /> 
-<!--	<link rel="stylesheet" href="css/custom-theme.f1lt3r/jquery-ui-1.7.custom.css" type="text/css" media="screen" /> 
 	<script type="application/javascript" src="floatingbrowsers.js"></script> -->
 	<script type="application/javascript" src="uielements.js"></script>
-<!--	<script type="application/javascript" src="trackball.js"></script>
-	<script type="application/javascript" src="getDataFromDB.js"></script> -->
 	<script type="application/javascript" src="interface1.2/interface.js"></script>
 	<script type="application/javascript" src="o3d_main.js"></script>
-<!--	<link rel="stylesheet" type="text/css" href="niftyCorners.css"/>
-	<link rel="stylesheet" type="text/css" href="niftyPrint.css" media="print"/>
-	<script type="text/javascript" src="nifty.js"></script>  -->	
     </head>
     <body oncontextmenu="return false;" onload="init();" onunload="uninit();">
 	<div id="container">
@@ -39,26 +33,10 @@
 			<h1>Open Human <img src="openhumanlogo.png" style="height: 25px; width: 30px;"></img></h1>
 		</div>
 		<div id="leftnav">
-		<!--	<p>
-			Choose which type of information you want for clicked objects.
-			</p>
-			<p><a href="#" id="dialog_link" class="ui-state-default ui-corner-all dialoglink"><span class="ui-icon ui-icon-newwin"></span>Google</a></p>
-			<p><a href="#" id="dialog_link2" class="ui-state-default ui-corner-all dialoglink"><span class="ui-icon ui-icon-newwin"></span>Wikipedia</a></p>
-			<iframe src="http://google.com" id="dialog" title="Google" style="width:640px;height:480px"></iframe>
-			<iframe src="http://en.wikipedia.org/wiki/Main_Page" id="dialog2" title="en.wikipedia" style="width:800px;height:600px"></iframe>
-			<br></br><br></br>
-			<span id='debug'>0</span> -->
 		</div>
 		<div id="content">
-
-<div id="o3d""></div>
-<BR>
-<!--<input type="text" id="url" size="60">
-<input type="button" id="load" onclick="doload();" value="Append Object">
-<div style="color: red;" id="loading"></div> -->
-
-		<!--	<canvas id="mainCanvas" style="border: 2px solid blue; cursor:move;" height="600px" width="800px"></canvas> -->
-			<!-- Add a canvas element to the page. It is scripted by using its id -->
+			<div id="o3d""></div>
+			<br>
 			<br>
 			<div class="fg-toolbar ui-widget-header ui-helper-clearfix ui-corner-all">
 				<div style="color: red;" id="loading"></div>
@@ -69,19 +47,11 @@
 					<button id="hideall" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-circle-minus"></span>Hide All</button>
 					<button id="showall" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-circle-plus"></span>Show All</button>
 					<button id="reset" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-refresh"></span>Reset View</button>
-		<!--			<a href="#" id="button2" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-circle-plus"></span>link</a> -->
 				</div>
 			</div>
 		</div>
 		<div id="rightnav">
 			<div id="demo">
-<!--
-				<p class="ui-state-default ui-corner-all ui-helper-clearfix" style="padding:4px;">
-				<span class="ui-icon ui-icon-volume-on" style="float:left; margin:-2px 5px 0 0;"></span>
-				Master volume
-				</p>
-				<div id="master" style="width:auto; margin:15px;"></div>
--->
 				<p class="ui-state-default ui-corner-all" style="padding:4px;margin-top:1em;">
 				<span class="ui-icon ui-icon-signal" style="float:left; margin:-2px 5px 0 0;"></span>
 				Navigation Controls
