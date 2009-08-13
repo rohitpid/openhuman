@@ -10,3 +10,4 @@ TODO
 8) Instead of sending models to far far away, delete them from the scene.
 9) Fix reset view code.
 10) Add hair particles
+11) Add grid and tool to measure distance between two points
