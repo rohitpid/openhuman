@@ -573,23 +573,32 @@ function buttonRotate(e)
 
 function buttonRotation(angle,axis)
 {
-		
+	var rotationQuat;
+	var rot_mat;	
+	g_lastRot = g_thisRot;
 	if (axis == 0) {
 
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationX(-angle));
+
+		rotationQuat = g_quaternions.rotationX(-angle);
 	}
 	else if (axis == 1) {
 
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationY(angle));
+
+		rotationQuat = g_quaternions.rotationY(angle);
 	}
 	else {
 
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].quaternionRotate(g_quaternions.rotationZ(angle));
+
+		rotationQuat = g_quaternions.rotationZ(angle);
 	}
-	
+	rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
+	g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
 }
 
 function pick(e)
