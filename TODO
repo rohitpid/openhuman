@@ -1,7 +1,7 @@
 TODO
 
 1) Fix the panning when rotated at non starting positions
-2) Fix rotation by mouse after rotation by button
+DONE 2) Fix rotation by mouse after rotation by button
 3) Fix the scale slider bug where it doesn't start and end at the same size if you start and end at the same slider value
 4) Better handle the opening of new tabs. We should probably open a new tab but not switch to it immediately. Instead we should notify the user on the oH page that a new tab with wikipedia was opened with information that they may want to see.
 5) On demand model loading
