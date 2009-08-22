@@ -1,3 +1,18 @@
+/*
+ * Copyright 2009 Rohit Pidaparthi
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Author: Rohit Pidaparthi <rohitpid@gmail.com>
+ *
+ */
+
 o3djs.require('o3djs.util');
 o3djs.require('o3djs.math');
 o3djs.require('o3djs.quaternions');
@@ -32,7 +47,6 @@ var g_camera = {
 };
 var g_dragging = false;
 
-
 //global oH variables
 var oH_obj;
 var oH_numObj;
@@ -59,6 +73,7 @@ var origMaterial;
 var flashType	= "COLOR";	//Change this to "MESH" if you want mesh highlighting
 							//"COLOR" for color highlighting
 var highlightMeshTransform;
+var objectRoot;
 
 /**
  * Creates the client area.
@@ -78,18 +93,19 @@ function initStep2(clientElements)
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
 	oH_OBJECTS_LIST = new Array  (
-		"skull.o3dtgz",
 		"head.o3dtgz",
 		"eye.o3dtgz",
+		"skull.o3dtgz",
 		"mandible.o3dtgz",
-		"thalamus.o3dtgz",
 		"cerebralcortex.o3dtgz",
-		"cerebellum.o3dtgz",
 		"corpuscallosum.o3dtgz",
+		"thalamus.o3dtgz",
+		"cerebellum.o3dtgz",
 		"medulla_oblongata.o3dtgz",
 		"pituitary.o3dtgz",
 		"pons.o3dtgz",
 		"hypothalamus.o3dtgz"
+		/*"cube.o3dtgz" */
 	);
 
 
@@ -158,6 +174,10 @@ function initStep2(clientElements)
 	 g_highlightMaterial.state = state;
 	 origMaterial = new Array();
 	 g_highlightShape = null;
+
+	//Code for rotating all models 90degrees in Y axis
+	objectRoot = g_pack.createObject('Transform');
+	objectRoot.rotateY(Math.PI/2);
 }
 
 function doload()
@@ -176,6 +196,7 @@ function doload()
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{
 		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
+		objectRoot = oH_obj[oH_numObj].parent;
 		oH_numObj++;
 	}
 	g_root=oH_obj;
@@ -497,9 +518,17 @@ function uninit()
 
 function pan(x,y,z)
 {
+	var factor = 0.5;
 
-	for(i=0;i<oH_obj.length;i++)
-	oH_obj[i].translate(x,y,z);	
+	var trans_dir = g_math.normalize(g_math.cross(g_camera.eye, [0,1,0] ) );
+	trans_dir = g_math.mulVectorScalar(trans_dir,factor*-x);
+	//for(i=0;i<oH_obj.length;i++)
+	//oH_obj[i].translate(trans_dir[0],trans_dir[1],trans_dir[2]);
+	g_viewInfo.drawContext.projection = g_math.matrix4.translate(g_viewInfo.drawContext.projection,trans_dir);
+	
+	var trans_dir = g_math.normalize(g_math.cross(g_camera.eye, [1,0,0] ) );
+	trans_dir = g_math.mulVectorScalar(trans_dir,factor*y);
+	g_viewInfo.drawContext.projection = g_math.matrix4.translate(g_viewInfo.drawContext.projection,trans_dir);
 }
 
 function scale(scaleValue)
