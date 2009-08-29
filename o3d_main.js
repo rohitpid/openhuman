@@ -110,7 +110,7 @@ var labelArrowMaterial;
 var currlabelPos;
 var currLabelText;
 var labelVisible = false;
-
+var xmlDoc;
 
 
 /**
@@ -127,7 +127,10 @@ function init()
  */
 function initStep2(clientElements)
 {
-	
+	xmlDoc=new window.XMLHttpRequest();
+	xmlDoc.open("GET","database.xml",false);
+	xmlDoc.send("");
+
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
 	oH_OBJECTS_LIST = new Array  (

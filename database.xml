@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding='UTF-8'?>
 <openhuman>
 	<model>
-		<name>head</head>
+		<name>head</name>
 		<asset>head.o3dtgz</asset>
 		<insideof>none</insideof>
 		<draw_with>none</draw_with>
@@ -32,7 +32,7 @@
 		
 	</model>
 	<model>
-		<name>eye</head>
+		<name>eye</name>
 		<asset>eye.o3dtgz</asset>
 		<insideof>head</insideof>
 		<draw_with>head</draw_with>
@@ -51,7 +51,7 @@
 		<label>
 			<name>pupil</name>
 			<position>23</position>
-			<summary>The pupil is an opening located in the center of the iris of the eye that allows light to enter the retina.[1] It appears black because most of the light entering the pupil is absorbed by the tissues inside the eye.<summary>
+			<summary>The pupil is an opening located in the center of the iris of the eye that allows light to enter the retina.[1] It appears black because most of the light entering the pupil is absorbed by the tissues inside the eye.</summary>
 			<link>http://en.wikipedia.org/wiki/Pupil</link>
 		</label>
 		
