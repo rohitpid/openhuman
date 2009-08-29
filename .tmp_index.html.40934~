@@ -28,65 +28,6 @@
 	<script type="application/javascript" src="o3d_main.js"></script>
     </head>
     <body oncontextmenu="return false;" onload="init();" onunload="uninit();">
-    	
-		
- <!--
- oH embeds the code for some effects(shaders) inside this hidden textarea.
- Effects contain the functions that define
- the vertex and pixel shaders used by shapes in oH.
---> 
-<!-- Don't render the textarea --> 
-<div style="display:none"> 
-<textarea id="fx" name="fx" cols="80" rows="20"> 
-  // The 4x4 world view projection matrix.
-  float4x4 viewProjection : WorldViewProjection;
- 
-  sampler texSampler0;
- 
-  // input parameters for our vertex shader
-  struct VertexShaderInput {
-    float4 position : POSITION;
-    float2 texcoord : TEXCOORD0;
-  };
- 
-  // input parameters for our pixel shader
-  // also the output parameters for our vertex shader
-  struct PixelShaderInput {
-    float4 position : POSITION;
-    float2 texcoord : TEXCOORD0;
-  };
- 
-  /**
-   * Vertex Shader performing basic viewing transformation.
-   */
-  PixelShaderInput vertexShaderFunction(VertexShaderInput input) {
-    /**
-     * We transform each vertex by the view projection matrix to bring
-     * it from world space to projection space.
-     *
-     * We return its color unchanged.
-     */
-    PixelShaderInput output;
- 
-    output.position = mul(input.position, viewProjection);
-    output.texcoord = input.texcoord;
-    return output;
-  }
-  /**
-   * Pixel Shader
-   */
-  float4 pixelShaderFunction(PixelShaderInput input): COLOR {
-    return tex2D(texSampler0, input.texcoord * 5) + float4(0.2, 0.2, 0.0, 1.0);
-  }
- 
-  // Here we tell our effect file the functions which specify our vertex
-  // and pixel shaders.
-  // #o3d VertexShaderEntryPoint vertexShaderFunction
-  // #o3d PixelShaderEntryPoint pixelShaderFunction
-  // #o3d MatrixLoadOrder RowMajor
-</textarea> 
-</div> 		
-		
 	<div id="container">
 		<div id="top" align=center>
 			<h1>Open Human <img src="openhumanlogo.png" style="height: 25px; width: 30px;"></img></h1>
@@ -141,8 +82,6 @@
 			<div id="instructions_box">Use the Controls above to zoom,scale,rotate and pan around the body<br></br>Other Features: <br>-- Right click on an object to select organ<br>-- Info button opens wikipedia article about organ<br>-- Hide button hides selected organ <br>-- Hide All button hides all organs<br>-- Show All button shows all organs</div>
 		</div>
 	</div>
-	
-	
 	<div id="push"><div>
 	<div id="footer">
 		Created by Rohit Pidaparthi <span id="amolink">This content requires Firefox with the <a href="http://code.google.com/apis/o3d/" id="link to o3d plugin">o3d</a> plugin.</span>
