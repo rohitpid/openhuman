@@ -127,13 +127,22 @@ function init()
  */
 function initStep2(clientElements)
 {
-	xmlDoc=new window.XMLHttpRequest();
-	xmlDoc.open("GET","database.xml",false);
-	xmlDoc.send("");
 
+	if (window.XMLHttpRequest)
+	{
+	AJAXRequest=new window.XMLHttpRequest();
+	AJAXRequest.open("GET","database.xml",false);
+	AJAXRequest.send("");
+	xmlDoc = AJAXRequest.responseXML;
+	}
+	oH_OBJECTS_LIST = [];
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
-	oH_OBJECTS_LIST = new Array  (
+	for(i=0;i<xmlDoc.getElementsByTagName("asset").length;i++)
+	{
+		oH_OBJECTS_LIST[i]=xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
+	}
+	/*oH_OBJECTS_LIST = new Array  (
 		"head.o3dtgz",
 		"eye.o3dtgz",
 		"skull.o3dtgz",
@@ -146,8 +155,8 @@ function initStep2(clientElements)
 		"pituitary.o3dtgz",
 		"pons.o3dtgz",
 		"hypothalamus.o3dtgz"
-		/*"cube.o3dtgz" */
-	);
+		/*"cube.o3dtgz"
+	);*/
 
 
 	g_loadingElement = document.getElementById('loading');

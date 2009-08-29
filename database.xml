@@ -7,30 +7,47 @@
 		<draw_with>none</draw_with>
 		<label>
 			<name>head</name>
-			<position>103</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>The head of an animal is the rostral part (from anatomical position) that usually comprises the brain, eyes, ears, nose, and mouth (all of which aid in various sensory functions, such as sight, hearing, smell, and taste).</summary>
 			<link>http://en.wikipedia.org/wiki/Head</link>
 		</label>
 		<label>
 			<name>mouth</name>
-			<position>242</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>The mouth, buccal cavity, or oral cavity is the first portion of the alimentary canal that receives food and begins digestion by mechanically breaking up the solid food particles into smaller pieces and mixing them with saliva.</summary>
 			<link>http://en.wikipedia.org/wiki/Mouth</link>
 		</label>
 		<label>
 			<name>ear</name>
-			<position>23</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>The ear is the organ that detects sound and is part of the auditory system. It not only acts as a receiver for sound, but plays a major role in the sense of balance and body position.</summary>
 			<link>http://en.wikipedia.org/wiki/Ear</link>
 		</label>
 		<label>
 			<name>nose</name>
-			<position>304</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>a nose is a protuberance in vertebrates that houses the nostrils, or nares, which admit and expel air for respiration in conjunction with the mouth.</summary>
 			<link>http://en.wikipedia.org/wiki/Nose</link>
 		</label>
 		
 	</model>
+
 	<model>
 		<name>eye</name>
 		<asset>eye.o3dtgz</asset>
@@ -38,23 +55,86 @@
 		<draw_with>head</draw_with>
 		<label>
 			<name>eye</name>
-			<position>54</position>
-			<summary>Eyes are organs that detect light, and send signals along the optic nerve to the visual and other areas of the brain</summary>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
+			<summary>Eyes are organs that detect light, and send signals along the optic nerve to the visual and other areas of the brain.</summary>
 			<link>http://en.wikipedia.org/wiki/Eye</link>
 		</label>
 		<label>
 			<name>iris</name>
-			<position>33</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>The iris is a membrane in the eye, responsible for controlling the diameter and size of the pupil and the amount of light reaching the retina. "Eye color" is the color of the iris, which can be green, blue, or brown.</summary>
 			<link>http://en.wikipedia.org/wiki/Iris_(anatomy)</link>
 		</label>
 		<label>
 			<name>pupil</name>
-			<position>23</position>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
 			<summary>The pupil is an opening located in the center of the iris of the eye that allows light to enter the retina.[1] It appears black because most of the light entering the pupil is absorbed by the tissues inside the eye.</summary>
 			<link>http://en.wikipedia.org/wiki/Pupil</link>
 		</label>
 		
+	</model>
+
+	<model>
+		<name>skull</name>
+		<asset>skull.o3dtgz</asset>
+		<insideof>head</insideof>
+		<draw_with>mandible</draw_with>
+		<label>
+			<name>cranium (skull)</name>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
+			<summary>The skull is a bony structure found in the head of many animals. The skull supports the structures of the face and protects the head against injury.</summary>
+			<link>http://en.wikipedia.org/wiki/Skull</link>
+		</label>
+	</model>
+
+	<model>
+		<name>mandible</name>
+		<asset>mandible.o3dtgz</asset>
+		<insideof>head</insideof>
+		<draw_with>skull</draw_with>
+		<label>
+			<name>mandible (jawbone)</name>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
+			<summary>The mandible (from Latin mandibula, "jawbone") or inferior maxillary bone forms the lower jaw and holds the lower teeth in place.</summary>
+			<link>http://en.wikipedia.org/wiki/Mandible</link>
+		</label>
+	</model>
+
+	<model>
+		<name>cerebral cortex</name>
+		<asset>cerebralcortex.o3dtgz</asset>
+		<insideof>skull</insideof>
+		<draw_with>cerebellum</draw_with>
+		<label>
+			<name>cerebral cortex</name>
+			<position>
+				<x></x>
+				<y></y>
+				<z></z>
+			</position>
+			<summary>The cerebral cortex is a structure within the brain that plays a key role in memory, attention, perceptual awareness, thought, language, and consciousness. It constitutes the outermost layer of the cerebrum.</summary>
+			<link>http://en.wikipedia.org/wiki/Cerebral_cortex</link>
+		</label>
 	</model>
 </openhuman>
 
