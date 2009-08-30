@@ -59,7 +59,7 @@ var oH_obj;
 var oH_numObj;
 var oH_OBJECTS_LIST;
 var oH_ASSET_PATH;
-var oH_loadingFirstFile=true;	
+
 var removedObjects = [];
 var g_hudRoot;
 var g_hudViewInfo;
@@ -112,6 +112,9 @@ var currLabelText;
 var labelVisible = false;
 var xmlDoc;
 
+var labelDebug = true;
+var oH_labelPos = [];				//Array containing a list of all the origins for the labeling arrows
+var oH_labelNor = [];
 
 /**
  * Creates the client area.
@@ -128,6 +131,31 @@ function init()
 function initStep2(clientElements)
 {
 
+	oH_labelPos = new Array();
+	oH_labelNor = new Array();
+	
+	//For head
+	oH_labelPos[0] = [-0.33,1.88,1.85];
+	oH_labelNor[0] = [-0.27,0.42,0.87];
+	
+	//For eye
+	oH_labelPos[1] = [0.96,0.39,1.55];
+	oH_labelNor[1] = [0.57,-0.33,0.75];
+	
+	//For Skull
+	oH_labelPos[2] = [-0.34,1.31,1.53];
+	oH_labelNor[2] = [-0.15,0.22,0.96];
+	
+	//For Mandible
+	oH_labelPos[3] = [0.46,-1.48,1.25];
+	oH_labelNor[3] = [0.52,-0.02,0.86];
+	
+	//For cerebral_cortex
+	oH_labelPos[4] = [-0.97,0.73,0.66];
+	oH_labelNor[4] = [-0.44,0.02,0.9];
+	
+
+
 	if (window.XMLHttpRequest)
 	{
 	AJAXRequest=new window.XMLHttpRequest();
@@ -135,14 +163,17 @@ function initStep2(clientElements)
 	AJAXRequest.send("");
 	xmlDoc = AJAXRequest.responseXML;
 	}
+	
 	oH_OBJECTS_LIST = [];
 	oH_OBJECTS_NAMES = [];
 	oH_numObj =0;
-	oH_ASSET_PATH = "assets/oH/"
+	oH_ASSET_PATH = "assets/oH/";
+	
 	for(i=0;i<xmlDoc.getElementsByTagName("asset").length;i++)
 	{
-		oH_OBJECTS_LIST[i]=xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
+		oH_OBJECTS_LIST[i]= xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
 		oH_OBJECTS_NAMES[i]=xmlDoc.getElementsByTagName("model_name")[i].childNodes[0].nodeValue;
+		 
 	}
 	/*oH_OBJECTS_LIST = new Array  (
 		"head.o3dtgz",
@@ -202,8 +233,6 @@ function initStep2(clientElements)
 	g_camera.eye = [0, 0, 5];
 	updateCamera();
 
-	doload();
-
 	o3djs.event.addEventListener(g_o3dElement, 'mousedown', startDragging);
 	o3djs.event.addEventListener(g_o3dElement, 'mousemove', drag);
 	o3djs.event.addEventListener(g_o3dElement, 'mouseup', stopDragging);
@@ -214,8 +243,10 @@ function initStep2(clientElements)
 	flashing = false;
 	flashOrigColor = null;
 	flashObject = null;
-	
-	
+		
+	//Create the main pack (NOTE: This was previously done inside loadFile()	
+	g_pack = g_client.createPack();
+		
      // Create a material for highlighting.
   	 g_highlightMaterial = g_pack.createObject('Material');
   	 g_highlightMaterial.drawList = g_viewInfo.performanceDrawList;
@@ -233,10 +264,6 @@ function initStep2(clientElements)
 	 g_highlightMaterial.state = state;
 	 origMaterial = new Array();
 	 g_highlightShape = null;
-
-	//Code for rotating all models 90degrees in Y axis
-	objectRoot = g_pack.createObject('Transform');
-	objectRoot.rotateY(Math.PI/2);
 	
 	/*************HUD IMPLEMENTATION**************************/
 		 
@@ -321,29 +348,37 @@ function initStep2(clientElements)
 	//Set arrow material to black
 	labelArrowMaterial.getParam('color').value = [0, 0, 0, 1];
 	
+	//Now that everything is setup, load all the models
+	doload();
+	
 	updateHUDInfo();
 	
 	
 }
 
-function doload()
+function doload(reload)
 {
-
-	if (g_pack)
-	{
-		g_pack.destroy();
-		g_pack = null;
-		oH_obj = null;
-		
+	//use the reload boolean in case a reload is necessary
+	
+	if (reload) {
+		if (g_pack) {
+			g_pack.destroy();
+			g_pack = null;
+			oH_obj = null;
+		}
 	}
 	
 	oH_numObj = 0;
 	oH_obj = new Array();
-	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
+	
+	/*******************NOTE : RESTRICTED TO FIRST FIVE MODELS FOR NOW**********************************/
+	
+	//for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
+	for (i = 0; i < 5; i++) 
 	{
-		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
+		
+		oH_obj[oH_numObj]	=	new Model( loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ),oH_labelPos[oH_numObj],oH_labelNor[oH_numObj] );
 		//oH_obj[oH_numObj].name = oH_OBJECTS_NAMES[i];
-		objectRoot = oH_obj[oH_numObj].parent;
 		oH_numObj++;
 	}
 	g_root=oH_obj;
@@ -446,13 +481,6 @@ function loadFile(context, path)
 		}
 	}
 
-	
-	if(oH_loadingFirstFile)
-	{
-		g_pack = g_client.createPack();
-		oH_loadingFirstFile=false;		
-	}
-	
 	// Create a new transform for the loaded file
 	var mesh = g_pack.createObject('Transform');
 	mesh.parent = g_client.root;
@@ -518,9 +546,9 @@ function drag(e)
 
 		for(i=0;i<oH_obj.length;i++)
 		{
-			var meshRot = oH_obj[i].localMatrix;
+			var meshRot = oH_obj[i].transform.localMatrix;
 			g_math.matrix4.setUpper3x3(meshRot, g_thisRot);
-			oH_obj[i].localMatrix = meshRot;
+			oH_obj[i].transform.localMatrix = meshRot;
 		
 		}
 	
@@ -584,7 +612,7 @@ function onRender(renderEvent)
 	
 	if(hudCanvasLib && labelVisible){
 	
-		someLabel = new Label(hudCanvasLib,"Head",currlabelPos[0],currlabelPos[1],100,40);
+		//someLabel = new Label(hudCanvasLib,"Head",currlabelPos[0],currlabelPos[1],100,40);
 	}
 		
 	if( flashing && flashTimer <= flashDURATION )
@@ -673,8 +701,7 @@ function uninit()
 		
 	if (g_client)
 	{
-	oH_loadingFirstFile=true;
-	g_client.cleanup();
+		g_client.cleanup();
 	}
 	
 }
@@ -685,8 +712,7 @@ function pan(x,y,z)
 
 	var trans_dir = g_math.normalize(g_math.cross(g_camera.eye, [0,1,0] ) );
 	trans_dir = g_math.mulVectorScalar(trans_dir,factor*-x);
-	//for(i=0;i<oH_obj.length;i++)
-	//oH_obj[i].translate(trans_dir[0],trans_dir[1],trans_dir[2]);
+	
 	g_viewInfo.drawContext.projection = g_math.matrix4.translate(g_viewInfo.drawContext.projection,trans_dir);
 	
 	var trans_dir = g_math.normalize(g_math.cross(g_camera.eye, [1,0,0] ) );
@@ -698,7 +724,7 @@ function scale(scaleValue)
 {	
 
 	for(i=0;i<oH_obj.length;i++)
-	oH_obj[i].scale(scaleValue,scaleValue,scaleValue);
+	oH_obj[i].transform.scale(scaleValue,scaleValue,scaleValue);
 }
 
 function zoomScroller(t)
@@ -742,19 +768,19 @@ function buttonRotate(e)
 		break;
 		
 		case 106:
-		pan(-0.5,0,0);
+		oH_obj[0].transform.translate(5,0,0);
 		break;
 		
 		case 108:
-		pan(0.5,0,0);
+		oH_obj[0].transform.translate(5,0,0);
 		break;
 		
 		case 105:
-		pan(0,0,0.5);
+		oH_obj[0].transform.translate(5,0,0);
 		break;
 		
 		case 107:
-		pan(0,0,-0.5);
+		oH_obj[0].transform.translate(5,0,0);
 		break;
 		
 		
@@ -771,21 +797,21 @@ function buttonRotation(angle,axis)
 	if (axis == 0) {
 
 		for(i=0;i<oH_obj.length;i++)
-		oH_obj[i].quaternionRotate(g_quaternions.rotationX(-angle));
+		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationX(-angle));
 
 		rotationQuat = g_quaternions.rotationX(-angle);
 	}
 	else if (axis == 1) {
 
 		for(i=0;i<oH_obj.length;i++)
-		oH_obj[i].quaternionRotate(g_quaternions.rotationY(angle));
+		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationY(angle));
 
 		rotationQuat = g_quaternions.rotationY(angle);
 	}
 	else {
 
 		for(i=0;i<oH_obj.length;i++)
-		oH_obj[i].quaternionRotate(g_quaternions.rotationZ(angle));
+		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationZ(angle));
 
 		rotationQuat = g_quaternions.rotationZ(angle);
 	}
@@ -843,11 +869,8 @@ function pick(e)
 
 		g_selectedInfo = pickInfo;
 		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
-		//runEffect("highlight");
-
-		//Draw labeling arrow
-		drawLabelArrow(pickInfo);
-
+		
+		
 		if (flashType == "COLOR") {
 			
 			flashObject = pickInfo.shapeInfo.shape;
@@ -865,180 +888,18 @@ function pick(e)
 	} 
 	else
 	{   
-		g_loadingElement.innerHTML = 'Nothing selected';	
-		hideLabelArrow();
+		g_loadingElement.innerHTML = 'Nothing selected';			
 	}
 }
 
-function drawLabelArrow(pickInfo)
+function dbg_pointOfClick(point)
 {
-		
-		/*
-		* Code to draw the arrows to the labels
- 		*/
-		
-	    // Lookup normal of intersection
- 	    // This code assumes that:
-	    // 1) the primitive is indexed (uses an index buffer)
- 	    // 2) it is a TRIANGLELIST.
- 	    // 3) No offsets are used by the stream
-	    // 4) That the primitive has a NORMAL stream
-			
- 	   	var rayInfo = pickInfo.rayIntersectionInfo;
-		var shape = pickInfo.shapeInfo.shape;
-   		var primitive = shape.elements[0];
-   		var primIndex = rayInfo.primitiveIndex;
-  	    var indexField = primitive.indexBuffer.fields[0];
-  		var normalField = primitive.streamBank.getVertexStream( g_o3d.Stream.NORMAL, 0).field;
-	    var textPos;		//We use this variable to track the worldspace location that the text box must appear at
-	    
-		 // Look up the 3 normals that make the triangle that was picked.
-   		var summedNormal = [0, 0, 0];
- 		var indexIndex = primIndex * 3;
-   		var vertIndices = indexField.getAt(indexIndex, 3);
- 	   			
-		for (var ii = 0; ii < 3; ++ii) {
- 	     			var normal = normalField.getAt(vertIndices[ii], 1);
- 	     			summedNormal = g_math.addVector(summedNormal, normal);
-		}
- 		   
-   		summedNormal = g_math.normalize(summedNormal);
+	//Use this function to display the point at which the click occured. This is in order to locate the label arrow's origin
+	// for each mesh. Its called only when label_debug is set to true. The point is the location clicked.
+	document.getElementById("footer").innerHTML = "Point of click X: "+ point[0] + " Y: " + point[1] + "  Z: " + point[2];
 
-   		// Get the world position of the collision.
- 		var worldPosition = pickInfo.worldIntersectionPosition;
- 	   
-		// Add the normal to it to get a point in space above it with some
- 		// multiplier to scale it.
- 		var normalSpot = g_math.addVector(
-   																	worldPosition,
-   																	g_math.mulVectorScalar(summedNormal, 
-																											NORMAL_SCALE_FACTOR
-  																										  )
-																 );
-		var depth = 1.5;
-		
-		// Put a line to show the normal
- 		g_debugLine.setVisible(true);
- 		g_debugLine.setEndPoints(worldPosition, normalSpot);
-		
-		 labelArrowTransform = g_pack.createObject('Transform');
-  		 labelArrowTransform.parent = g_client.root;
-		
-		var subTransform = g_pack.createObject('Transform');	
-		subTransform.parent	= labelArrowTransform;
-						
-		 labelArrowShape =  o3djs.primitives.createCylinder(
-  					 						  												g_pack,
-   					 						 												 labelArrowMaterial,
-																						     0.005,		//radius
-																							 depth,		//depth
-																							 6,		//radial subdivisions
-																							 1		//vertical subdivisions
-																							 //Multiply by required transform (optional)
-																					     );	 
-   		
-		//Translate the transform to the point of intersection
-		labelArrowTransform.translate(worldPosition);								
-		subTransform.addShape(labelArrowShape);  
-		
-		var dir = g_math.normalize( g_math.subVector(worldPosition, normalSpot) );
-		
-		var normalDir       =  g_math.normalize ( g_math.cross( g_camera.eye, [0,1,0] ) );
-		var orientedAngle = Math.acos(g_math.dot(dir,normalDir)) * 180/Math.PI;
-		
-		var cross =  g_math.cross( [0,-1,0],dir );
-		var dot		=  g_math.dot([0,-1,0],dir);
-		
-		var quat   =  o3djs.quaternions.axisRotation( cross, Math.acos(dot) );
-		var rot = o3djs.quaternions.quaternionToRotation(quat);
-			
-		subTransform.quaternionRotate(quat);
-		subTransform.translate(0,depth/2,0);
-		
-		//	textPos =  g_math.addVector( worldPosition,g_math.mulVectorScalar(dir,-depth) );
-		
-		var subTransform2 = g_pack.createObject('Transform');	
-		subTransform2.parent	=  labelArrowTransform;
-		
-		var depth2 = 2;
-		var pointer =  o3djs.primitives.createCylinder(
-  					 						  												g_pack,
-   					 						 												 labelArrowMaterial,
-																						     0.005,		//radius
-																							 depth2,		//depth
-																							 6,		//radial subdivisions
-																							 1		//vertical subdivisions
-																							 
-																				);	 
-																				
-		subTransform2.translate(  g_math.mulVectorScalar(dir,-depth) );
-		subTransform2.rotateZ(Math.PI/2);	
-		
-		
-		
-		
-		
-		if(orientedAngle<90) {
-			subTransform2.translate( [0,-depth2/2,0] );
-			textPos = g_math.addVector(g_math.addVector(worldPosition , g_math.mulVectorScalar(dir,-depth) ) , [depth2,0,0] );			
-		}
-		
-		else {			
-			subTransform2.translate( [0,depth2/2,0] );
-				textPos = g_math.addVector(g_math.addVector(worldPosition , g_math.mulVectorScalar(dir,-depth) ) , [-depth2,0,0] );			
-		}
 	
-		//textPos is now in world coordinates. We need to now transform this to the final coordinates on the screen
-		//To this we'll have to multiply it with the view and projection matrix
-		
-		var ViewProjectionMatrix = g_math.matrix4.compose(g_viewInfo.drawContext.projection,g_viewInfo.drawContext.view);
-		
-		currlabelPos				= g_math.matrix4.transformPoint(ViewProjectionMatrix, textPos );
-		
-		var trialCube = o3djs.primitives.createCube(
-																			g_pack,
-   					 						 								labelArrowMaterial,
-																			0.10																																																							
-																	  );
-		
-		var TrialTransform = g_pack.createObject('Transform');	
-		TrialTransform.parent = g_client.root;
-		TrialTransform.addShape(trialCube);
-		TrialTransform.translate(textPos);
-		
-		
-		
-		
-		//Transform coord from [-1,1] to [0,2]
-		currlabelPos[0]	+=1;
-		currlabelPos[1] +=1;		
-		
-		//Transform coord from [0,2] to [0,1]
-		currlabelPos[0] /= 2;
-		currlabelPos[1] /= 2;
-		
-		//Convert to Screen Coord
-		currlabelPos[0] *= g_client.width;
-		currlabelPos[1] *= g_client.height;
-		
-		currlabelPos[1] = g_client.height - currlabelPos[1];
-		
-		labelVisible  = true;
-		document.getElementById("debug").innerHTML = "WX: "+ textPos[0] + " WY: " + textPos[1] + " Label X: " + currlabelPos[0] + " Label Y: " + currlabelPos[1];
-		 
-		subTransform2.addShape(pointer);
-		
-				
-		o3djs.pack.preparePack(g_pack, g_viewInfo);
 }
-
-function hideLabelArrow()
-{
-	g_debugLine.setVisible(false);
-	labelTransform = null;
-	labelVisible		 = false;
-}
-
 
 function hudMouseHandler(e)
 {
@@ -1059,8 +920,8 @@ function hudMouseHandler(e)
 		
 		
 		//	var shapeList = pickInfo.shapeInfo.parent.transform.shapes;
-			document.getElementById("debug").innerHTML = pickInfo.shapeInfo.parent.transform.name + ':Name of Button Clicked';
-			document.getElementById("debug").innerHTML = "Target at:" + g_camera.target[0] + "," + g_camera.target[1] + "," + g_camera.target[2];
+			document.getElementById("footer").innerHTML = pickInfo.shapeInfo.parent.transform.name + ':Name of Button Clicked';
+			document.getElementById("footer").innerHTML = "Target at:" + g_camera.target[0] + "," + g_camera.target[1] + "," + g_camera.target[2];
 			if(pickInfo.shapeInfo.parent.transform.name == 'panbutton')
 			pan(0.5,0,0);
 			if(pickInfo.shapeInfo.parent.transform.name == 'rotatebutton')
@@ -1196,10 +1057,18 @@ function hide()
 	// Add it to the same transform
 	if(g_selectedInfo)
 	{
-		//g_selectedInfo.shapeInfo.parent.transform.visible = true;
-		g_selectedInfo.shapeInfo.parent.transform.translate(100,100,100);
-		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name+" hidden";
-		removedObjects.push(g_selectedInfo.shapeInfo.parent.transform);
+		//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
+		//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
+		
+		for( var i=0; i<oH_numObj; i++ ){
+			if(g_selectedInfo.shapeInfo.parent.transform.name == oH_obj[i].transform.name)
+			{
+				oH_obj[i].transform.translate(100,100,100);
+				g_loadingElement.innerHTML = oH_obj[i].transform.name+" hidden";
+				removedObjects.push(oH_obj[i].transform);
+			}
+		}
+		
 	}
 	
 	//Remove the rayinfo after the hide so that it doesnt muck up things later
@@ -1220,8 +1089,8 @@ function hideall()
 {
 	for (var i = 0; i<oH_obj.length;i++)
 	{
-		oH_obj[i].translate(100,100,100);
-		removedObjects.push(oH_obj[i]);
+		oH_obj[i].transform.translate(100,100,100);
+		removedObjects.push(oH_obj[i].transform);
 	}
 	g_loadingElement.innerHTML = "All objects hidden";
 }
@@ -1257,6 +1126,203 @@ function resetView()
 	updateProjection();
 	showall()
 }
+
+function Model(o3d_trans,labelPos,normal)
+{
+	this.transform = o3d_trans;
+	this.name			= null;
+	this.labelPos	= labelPos;
+	this.normal		=	normal;
+	
+	this.labelArrow = new LabelArrow( this.labelPos,this.normal,this.transform );
+	
+}
+
+function LabelArrow(loc,nor,attachTo)
+{
+		this.attachTo = attachTo;
+		this.labelArrowTransform  = g_pack.createObject('Transform');		
+		//this.labelArrowTransform.parent = g_client.root;	
+		this.labelPos = null;
+		this.drawArrow(loc,nor);
+		
+		this.label	 = new Label( hudCanvasLib,"Head",this.labelPos[0],this.labelPos[1],100,40 );
+}
+
+LabelArrow.prototype.drawArrow = function(loc,nor){
+		
+		/*
+		* Code to draw the arrows to the labels
+ 		*/
+		
+		var worldPosition;
+		var summedNormal = [0, 0, 0];
+		this.labelArrowTransform.parent = this.attachTo;
+		var textPos; //We use this variable to track the worldspace location that the text box must appear at
+		
+		//If the incoming argument is a pickinfo object, its length will be 1; if its a position on the other hand it will be 3
+		
+		if (loc.length != 3) {
+			// Lookup normal of intersection
+			// This code assumes that:
+			// 1) the primitive is indexed (uses an index buffer)
+			// 2) it is a TRIANGLELIST.
+			// 3) No offsets are used by the stream
+			// 4) That the primitive has a NORMAL stream
+			
+			var rayInfo = loc.rayIntersectionInfo;
+			var shape = loc.shapeInfo.shape;
+			var primitive = shape.elements[0];
+			var primIndex = rayInfo.primitiveIndex;
+			var indexField = primitive.indexBuffer.fields[0];
+			var normalField = primitive.streamBank.getVertexStream(g_o3d.Stream.NORMAL, 0).field;
+			
+			
+			// Look up the 3 normals that make the triangle that was picked.
+			var indexIndex = primIndex * 3;
+			var vertIndices = indexField.getAt(indexIndex, 3);
+			
+			for (var ii = 0; ii < 3; ++ii) {
+				var normal = normalField.getAt(vertIndices[ii], 1);
+				summedNormal = g_math.addVector(summedNormal, normal);
+			}
+			
+			summedNormal = g_math.normalize(summedNormal);
+									
+			// Get the world position of the collision.
+			worldPosition = loc.worldIntersectionPosition;
+			
+			//display the point at debug output
+			dbg_pointOfClick(worldPosition);
+			
+		}
+		else { //Fixed position Non-debug functionality
+			
+			
+			worldPosition = loc;
+			summedNormal = nor;
+			
+		}
+	   
+		// Add the normal to it to get a point in space above it with some
+ 		// multiplier to scale it.
+ 		var normalSpot = g_math.addVector(
+   																	worldPosition,
+   																	g_math.mulVectorScalar(summedNormal, 
+																											NORMAL_SCALE_FACTOR
+  																										  )
+																 );
+		var depth = 1.5;
+				
+				
+		var subTransform = g_pack.createObject('Transform');	
+		subTransform.parent	= this.labelArrowTransform;
+						
+		 labelArrowShape =  o3djs.primitives.createCylinder(
+  					 						  												g_pack,
+   					 						 												 labelArrowMaterial,
+																						     0.005,		//radius
+																							 depth,		//depth
+																							 6,		//radial subdivisions
+																							 1		//vertical subdivisions
+																							 //Multiply by required transform (optional)
+																					     );	 
+   		
+		//Translate the transform to the point of intersection
+		this.labelArrowTransform.translate(worldPosition);								
+		subTransform.addShape(labelArrowShape);  
+		
+		var dir = g_math.normalize( g_math.subVector(worldPosition, normalSpot) );
+		
+		var normalDir       =  g_math.normalize ( g_math.cross( g_camera.eye, [0,1,0] ) );
+		var orientedAngle = Math.acos(g_math.dot(dir,normalDir)) * 180/Math.PI;
+		
+		var cross =  g_math.cross( [0,-1,0],dir );
+		var dot		=  g_math.dot([0,-1,0],dir);
+		
+		var quat   =  o3djs.quaternions.axisRotation( cross, Math.acos(dot) );
+		var rot = o3djs.quaternions.quaternionToRotation(quat);
+			
+		subTransform.quaternionRotate(quat);
+		subTransform.translate(0,depth/2,0);
+				
+		var subTransform2 = g_pack.createObject('Transform');	
+		subTransform2.parent	=  this.labelArrowTransform;
+		
+		var depth2 = 2;
+		var pointer =  o3djs.primitives.createCylinder(
+  					 						  												g_pack,
+   					 						 												 labelArrowMaterial,
+																						     0.005,		//radius
+																							 depth2,		//depth
+																							 6,		//radial subdivisions
+																							 1		//vertical subdivisions
+																							 
+																				);	 
+																				
+		subTransform2.translate(  g_math.mulVectorScalar(dir,-depth) );
+		subTransform2.rotateZ(Math.PI/2);	
+				
+		if(orientedAngle<90) {
+			subTransform2.translate( [0,-depth2/2,0] );
+			textPos = g_math.addVector(g_math.addVector(worldPosition , g_math.mulVectorScalar(dir,-depth) ) , [depth2,0,0] );			
+		}
+		
+		else {			
+			subTransform2.translate( [0,depth2/2,0] );
+				textPos = g_math.addVector(g_math.addVector(worldPosition , g_math.mulVectorScalar(dir,-depth) ) , [-depth2,0,0] );			
+		}
+	
+		//textPos is now in world coordinates. We need to now transform this to the final coordinates on the screen
+		//To this we'll have to multiply it with the view and projection matrix
+		
+		var ViewProjectionMatrix = g_math.matrix4.compose(g_viewInfo.drawContext.projection,g_viewInfo.drawContext.view);
+		
+		this.labelPos				= g_math.matrix4.transformPoint(ViewProjectionMatrix, textPos );
+		
+		var trialCube = o3djs.primitives.createCube(
+																			g_pack,
+   					 						 								labelArrowMaterial,
+																			0.10																																																							
+																	  );
+		
+		var ArrTipTrans = g_pack.createObject('Transform');	
+		ArrTipTrans.parent = this.attachTo;
+		ArrTipTrans.addShape(trialCube);
+		ArrTipTrans.translate(textPos);		
+		
+		//Transform coord from [-1,1] to [0,2]
+		this.labelPos[0]	+=1;
+		this.labelPos[1] +=1;		
+		
+		//Transform coord from [0,2] to [0,1]
+		this.labelPos[0] /= 2;
+		this.labelPos[1] /= 2;
+		
+		//Convert to Screen Coord
+		this.labelPos[0] *= g_client.width;
+		this.labelPos[1] *= g_client.height;
+		
+		this.labelPos[1] = g_client.height - this.labelPos[1];
+		g_loadingElement.innerHTML = "labelPos X:" + this.labelPos[0] + " Y: " + this.labelPos[1]; 
+				 
+		subTransform2.addShape(pointer);
+						
+		o3djs.pack.preparePack(g_pack, g_viewInfo);
+	
+};
+
+/*
+LabelArrow.prototype.hideArrow() =function(){
+		
+	labelTransform.visible = false;
+	document.getElementById("footer").innerHTML = "";
+
+};
+
+*/
+
+
 
 function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
 {
@@ -1312,15 +1378,6 @@ function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
                               		 this.textPaint);
 	 this.canvasQuad.updateTexture();
 }
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -1416,4 +1473,3 @@ function rgbToHsv(r, g, b) {
 
     return [Math.round(hue), Math.round(saturation * 100), Math.round(value * 100)];
 }
-
