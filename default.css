@@ -27,9 +27,12 @@ button.fg-button .ui-icon{ left: -1.2em;}
 .fg-buttonset { float:left;}
 .fg-buttonset .fg-button { float: left; }
 
-.fg-toolbar { padding: 0.2em; margin: 0; width:70%; }
+.fg-toolbar { padding: 0.3em; margin: 0; width:70%; }
 .fg-toolbar .fg-buttonset { margin-left: auto; margin-right:auto; padding-left: 1px; }
-.fg-toolbar .fg-button { font-size: 1em; }
+.fg-toolbar .fg-button { font-size: 1.0em; }
+
+#information { width: 270px; padding: 0.4em; position: relative; background: hsla(210, 100%, 75%, 0.5);}
+#information h3 { margin: 0; padding: 0.4em; text-align: center; }
 
 
 #zoom_label
@@ -204,12 +207,12 @@ span.invisible
 	margin:15px;
 	display: inline-block;
 }
-
+/*
 .infodiags
 {
 	background: hsla(210, 100%, 75%, 0.5);
 	width: 270px;
-}
+}*/
 
 #container
 {

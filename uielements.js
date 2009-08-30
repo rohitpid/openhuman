@@ -54,7 +54,6 @@
 		}
 	});
 
-
 	// setup control for scaling objects
 	var lastValue=1;
 	$("#scalingscroller").slider({
@@ -188,5 +187,34 @@
 	});
 	$("#instructions").click(function(){
 	g_loadingElement.innerHTML ="Use the Controls above to zoom,scale,rotate and pan around the body<br></br>Other Features: <br>-- Right click on an object to select organ<br>-- Info button opens wikipedia article about organ<br>-- Hide button hides selected organ <br>-- Hide All button hides all organs<br>-- Show All button shows all organs"
+	runEffect("explode");
+	//$("#information").show();
 	});
 });
+
+		//run the currently selected effect
+		function runEffect(effect){
+			//get effect type from 
+			var selectedEffect = effect;
+			
+			//most effect types need no options passed by default
+			var options = {};
+			//check if it's scale, transfer, or size - they need options explicitly set
+			if(selectedEffect == 'scale'){  options = {percent: 100}; }
+			else if(selectedEffect == 'transfer'){ options = { to: "#button", className: 'ui-effects-transfer' }; }
+			else if(selectedEffect == 'size'){ options = { to: {width: 280,height: 185} }; }
+			
+			//run the effect
+			if(selectedEffect=="explode")
+			$("#information").show(selectedEffect,options,500,effectCallback);
+			else
+			$("#information").effect(selectedEffect,options,500,effectCallback);
+		};
+
+		//callback function to bring a hidden box back
+		function effectCallback(){
+			setTimeout(function(){
+				$("#information:hidden").removeAttr('style').hide().fadeOut();
+			}, 500);
+		};
+

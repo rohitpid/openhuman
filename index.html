@@ -109,7 +109,8 @@
 					<button id="hideall" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-circle-minus"></span>Hide All</button>
 					<button id="showall" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-circle-plus"></span>Show All</button>
 					<button id="reset" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-refresh"></span>Reset View</button>
-					<button id="instructions" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-comment"></span>Instructions</button>					
+					<button id="instructions" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-comment"></span>Instructions</button>
+					<button id="label_toggle" class="fg-button fg-button-icon-left ui-state-default ui-corner-all"><span class="ui-icon ui-icon-comment"></span>Labels On/Off</button>		
 				</div>
 			</div>
 		</div>
@@ -140,8 +141,13 @@
 				<div id="pan_label">Pan</div>
 			</div>
 			<br>
-			<div class="infodiags">Information:</div>
-			<div class="infodiags" id="information"></div>
+		<!--	<div class="infodiags">Information:</div>
+			<div class="infodiags" id="information"></div> -->
+			<div id="information" class="ui-widget-content ui-corner-all">
+				<h3 class="ui-widget-header ui-corner-all">Information</h3>
+				<p id="info_text"></p>
+				<p id="debug"></p>
+			</div>
 		</div>
 	</div>
 	

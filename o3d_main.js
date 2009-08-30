@@ -136,11 +136,13 @@ function initStep2(clientElements)
 	xmlDoc = AJAXRequest.responseXML;
 	}
 	oH_OBJECTS_LIST = [];
+	oH_OBJECTS_NAMES = [];
 	oH_numObj =0;
 	oH_ASSET_PATH = "assets/oH/"
 	for(i=0;i<xmlDoc.getElementsByTagName("asset").length;i++)
 	{
 		oH_OBJECTS_LIST[i]=xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
+		oH_OBJECTS_NAMES[i]=xmlDoc.getElementsByTagName("model_name")[i].childNodes[0].nodeValue;
 	}
 	/*oH_OBJECTS_LIST = new Array  (
 		"head.o3dtgz",
@@ -159,7 +161,7 @@ function initStep2(clientElements)
 	);*/
 
 
-	g_loadingElement = document.getElementById('information');
+	g_loadingElement = document.getElementById('info_text');
 	
 	g_o3dElement = clientElements[0];
 	g_o3d = g_o3dElement.o3d;
@@ -340,6 +342,7 @@ function doload()
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{
 		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
+		//oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];
 		objectRoot = oH_obj[oH_numObj].parent;
 		oH_numObj++;
 	}
@@ -840,6 +843,7 @@ function pick(e)
 
 		g_selectedInfo = pickInfo;
 		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
+		//runEffect("highlight");
 
 		//Draw labeling arrow
 		drawLabelArrow(pickInfo);
@@ -862,7 +866,7 @@ function pick(e)
 	else
 	{   
 		g_loadingElement.innerHTML = 'Nothing selected';	
-		 hideLabelArrow();
+		hideLabelArrow();
 	}
 }
 
@@ -1020,7 +1024,7 @@ function drawLabelArrow(pickInfo)
 		currlabelPos[1] = g_client.height - currlabelPos[1];
 		
 		labelVisible  = true;
-		document.getElementById("footer").innerHTML = "WX: "+ textPos[0] + " WY: " + textPos[1] + " Label X: " + currlabelPos[0] + " Label Y: " + currlabelPos[1];
+		document.getElementById("debug").innerHTML = "WX: "+ textPos[0] + " WY: " + textPos[1] + " Label X: " + currlabelPos[0] + " Label Y: " + currlabelPos[1];
 		 
 		subTransform2.addShape(pointer);
 		
@@ -1055,8 +1059,8 @@ function hudMouseHandler(e)
 		
 		
 		//	var shapeList = pickInfo.shapeInfo.parent.transform.shapes;
-			document.getElementById("footer").innerHTML = pickInfo.shapeInfo.parent.transform.name + ':Name of Button Clicked';
-			document.getElementById("footer").innerHTML = "Target at:" + g_camera.target[0] + "," + g_camera.target[1] + "," + g_camera.target[2];
+			document.getElementById("debug").innerHTML = pickInfo.shapeInfo.parent.transform.name + ':Name of Button Clicked';
+			document.getElementById("debug").innerHTML = "Target at:" + g_camera.target[0] + "," + g_camera.target[1] + "," + g_camera.target[2];
 			if(pickInfo.shapeInfo.parent.transform.name == 'panbutton')
 			pan(0.5,0,0);
 			if(pickInfo.shapeInfo.parent.transform.name == 'rotatebutton')
