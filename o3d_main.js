@@ -342,7 +342,7 @@ function doload()
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{
 		oH_obj[oH_numObj] = loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] );
-		//oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];
+		//oH_obj[oH_numObj].name = oH_OBJECTS_NAMES[i];
 		objectRoot = oH_obj[oH_numObj].parent;
 		oH_numObj++;
 	}
