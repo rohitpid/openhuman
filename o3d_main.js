@@ -159,7 +159,7 @@ function initStep2(clientElements)
 	);*/
 
 
-	g_loadingElement = document.getElementById('loading');
+	g_loadingElement = document.getElementById('information');
 	
 	g_o3dElement = clientElements[0];
 	g_o3d = g_o3dElement.o3d;

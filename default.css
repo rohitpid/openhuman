@@ -27,7 +27,7 @@ button.fg-button .ui-icon{ left: -1.2em;}
 .fg-buttonset { float:left;}
 .fg-buttonset .fg-button { float: left; }
 
-.fg-toolbar { padding: 0.2em; margin: 0; width:75%; }
+.fg-toolbar { padding: 0.2em; margin: 0; width:70%; }
 .fg-toolbar .fg-buttonset { margin-left: auto; margin-right:auto; padding-left: 1px; }
 .fg-toolbar .fg-button { font-size: 1em; }
 
@@ -71,7 +71,7 @@ button.fg-button .ui-icon{ left: -1.2em;}
 }
 
 
-#demo
+#buttons
 {
 	position: relative;
 	height: 200px;
@@ -205,12 +205,10 @@ span.invisible
 	display: inline-block;
 }
 
-#instructions_box
+.infodiags
 {
 	background: hsla(210, 100%, 75%, 0.5);
-	width: 260px;
-	height: 270px;
-	display: none;
+	width: 270px;
 }
 
 #container
@@ -241,10 +239,10 @@ span.invisible
 #leftnav
 {
 	float: left;
-	width: 130px;
+	width: 10px;
 	height: 70%;
 /*	margin: 0 auto; */
-	padding: 16px;
+/*	padding: 16px;*/
 }
 
 #rightnav
@@ -268,18 +266,18 @@ span.invisible
 	min-height: 600px; */
 	height: auto;
 	width: auto;
-	margin-left: 130px;
+	margin-left: 10px;
 /*	width: 40%;
 	border-left: 1px solid gray;
-	border-right: 1px solid gray; */
-	padding: 5px;
+	border-right: 1px solid gray;
+	padding: 5px; */
 	z-index:0;
 }
 
 #o3d
 {
-	width:65%;
-	height:75%;
+	width:70%;
+	height:83%;
 	position:relative;
 	display: inline-block;
 	z-index:0;
