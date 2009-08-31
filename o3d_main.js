@@ -213,8 +213,7 @@ function initStep2(clientElements)
 	);
 
 	//Add a debug line to use for testing 
-	   g_debugHelper = o3djs.debug.createDebugHelper(g_client.createPack(),
-                                           						   		   		       g_viewInfo);
+	   g_debugHelper = o3djs.debug.createDebugHelper(g_client.createPack(),g_viewInfo);
 	  g_debugLineGroup = g_debugHelper.createDebugLineGroup(g_client.root);
  	  g_debugLine = g_debugLineGroup.addLine();
   	  g_debugLine.setColor([0,1,0,1]);
@@ -379,9 +378,11 @@ function doload(reload)
 	for (i = 0; i < 5; i++) 
 	{
 		
-		oH_obj[oH_numObj]	=	new Model( loadFile(g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ),oH_labelPos[oH_numObj],oH_labelNor[oH_numObj] );
-		//oH_obj[oH_numObj].name = oH_OBJECTS_NAMES[i];
+		oH_obj[oH_numObj]	=	new Model( loadFile( g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ) );
+		
+		oH_obj[oH_numObj].addLabel( oH_labelPos[oH_numObj], oH_labelNor[oH_numObj] );
 		oH_numObj++;
+		
 	}
 	g_root=oH_obj;
 }
@@ -876,7 +877,8 @@ function pick(e)
 		{
 			//We create a fake model whose constructor draws an arrow. We do that by passing the root transform directly
 			//So there is no mesh involved. Also in place of normal we send the pickinfo object
-			fakeTestModel = new Model( g_client.root,[0,0,0],pickInfo );
+			fakeTestModel = new Model( g_client.root );
+			fakeTestModel.addLabel([0,0,0],pickInfo);
 		}
 		
 		
@@ -1137,26 +1139,39 @@ function resetView()
 	showall();
 }
 
-function Model(o3d_trans,labelPos,normal)
+function Model(o3d_trans)
 {
 	this.transform = o3d_trans;
-	this.name			= null;
-	this.labelPos	= labelPos;
-	this.normal		=	normal;
+	this.name	   = null;
+	this.labels	   = new Array();
+	this.num_labels = 0;
 	
-	this.labelArrow = new LabelArrow( this.labelPos,this.normal,this.transform );
 	
 }
+
+Model.prototype.addLabel = function(labelPos,labelNor){
+	
+	//add a label arrow first
+	this.labels[this.num_labels] = new LabelArrow( labelPos,labelNor,this.transform );
+	
+	//TODO: add a label (text)
+	
+	//increase the label count
+	this.num_labels++;
+	
+};
+
 
 function LabelArrow(loc,nor,attachTo)
 {
 		this.attachTo = attachTo;
 		this.labelArrowTransform  = g_pack.createObject('Transform');		
-		//this.labelArrowTransform.parent = g_client.root;	
 		this.labelPos = null;
-		this.drawArrow(loc,nor);
 		
-	//	this.label	 = new Label( hudCanvasLib,"Head",this.labelPos[0],this.labelPos[1],100,40 );
+		this.pos = loc;
+		this.nor = nor;
+		this.drawArrow(this.pos,this.nor);
+		
 }
 
 LabelArrow.prototype.drawArrow = function(loc,nor){
@@ -1331,8 +1346,6 @@ LabelArrow.prototype.hideArrow() =function(){
 };
 
 */
-
-
 
 function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
 {
