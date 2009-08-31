@@ -383,6 +383,18 @@ function loadLabels()
 	}
 }
 
+function removeLabels()
+{
+	for(i=0;i<oH_obj.length;i++)
+	{
+		for(j=0;j<oH_obj[i].labels.length;j++)
+		{
+			oH_obj[i].labels[j].hideArrow();
+		}
+		
+	}
+}
+
 function loadFile(context, path)
 {
 	function callback(pack, parent, exception)
@@ -1339,15 +1351,12 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 	
 };
 
-/*
-LabelArrow.prototype.hideArrow() =function(){
+LabelArrow.prototype.hideArrow =function(){
 		
-	labelTransform.visible = false;
-	document.getElementById("footer").innerHTML = "";
+	this.labelTransform.visible = false;
+	//document.getElementById("footer").innerHTML = "";
 
 };
-
-*/
 
 function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
 {
