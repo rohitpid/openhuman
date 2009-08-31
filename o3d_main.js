@@ -112,7 +112,7 @@ var currLabelText;
 var labelVisible = false;
 var xmlDoc;
 
-var labelDebug = true;
+var labelDebug = false;
 var fakeTestModel;
 
 /**
@@ -867,7 +867,19 @@ function pick(e)
 	{
 
 		g_selectedInfo = pickInfo;
-		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
+
+		for(i=0;i<oH_obj.length;i++)
+		{
+			if(oH_obj[i].transform.name.replace(/ /,"") == g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() )
+			{
+				runEffect("explode");
+				//g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
+				g_loadingElement.innerHTML = "You clicked on the "+oH_obj[i].labels[0].name + "<br><br>" + 
+				oH_obj[i].labels[0].summary + "... <br></br>"+"<a target='_blank' href="+
+				oH_obj[i].labels[0].link+">Click to open full article at Wikipedia</a>";
+			}
+			
+		}
 		
 		if(labelDebug)
 		{
