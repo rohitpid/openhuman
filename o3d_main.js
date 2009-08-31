@@ -132,7 +132,6 @@ function init()
  */
 function initStep2(clientElements)
 {
-
 	oH_labelPos = new Array();
 	oH_labelNor = new Array();
 	
@@ -155,9 +154,9 @@ function initStep2(clientElements)
 	//For cerebral_cortex
 	oH_labelPos[4] = [-0.97,0.73,0.66];
 	oH_labelNor[4] = [-0.44,0.02,0.9];
-	
 
-
+	//Load the XML file database.xml to xmlDoc
+	//so that we can parse data for models and labels later
 	if (window.XMLHttpRequest)
 	{
 	AJAXRequest=new window.XMLHttpRequest();
@@ -165,34 +164,6 @@ function initStep2(clientElements)
 	AJAXRequest.send("");
 	xmlDoc = AJAXRequest.responseXML;
 	}
-	
-	oH_OBJECTS_LIST = [];
-	oH_OBJECTS_NAMES = [];
-	oH_numObj =0;
-	oH_ASSET_PATH = "assets/oH/";
-	
-	for(i=0;i<xmlDoc.getElementsByTagName("asset").length;i++)
-	{
-		oH_OBJECTS_LIST[i]= xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
-		oH_OBJECTS_NAMES[i]=xmlDoc.getElementsByTagName("model_name")[i].childNodes[0].nodeValue;
-		 
-	}
-	/*oH_OBJECTS_LIST = new Array  (
-		"head.o3dtgz",
-		"eye.o3dtgz",
-		"skull.o3dtgz",
-		"mandible.o3dtgz",
-		"cerebralcortex.o3dtgz",
-		"corpuscallosum.o3dtgz",
-		"thalamus.o3dtgz",
-		"cerebellum.o3dtgz",
-		"medulla_oblongata.o3dtgz",
-		"pituitary.o3dtgz",
-		"pons.o3dtgz",
-		"hypothalamus.o3dtgz"
-		/*"cube.o3dtgz"
-	);*/
-
 
 	g_loadingElement = document.getElementById('info_text');
 	
@@ -359,6 +330,33 @@ function initStep2(clientElements)
 
 function loadModels(reload)
 {
+	oH_OBJECTS_LIST = [];
+	oH_OBJECTS_NAMES = [];
+	oH_numObj =0;
+	oH_ASSET_PATH = "assets/oH/";
+	
+	for(i=0;i<xmlDoc.getElementsByTagName("asset").length;i++)
+	{
+		oH_OBJECTS_LIST[i]= xmlDoc.getElementsByTagName("asset")[i].childNodes[0].nodeValue;
+		oH_OBJECTS_NAMES[i]=xmlDoc.getElementsByTagName("model_name")[i].childNodes[0].nodeValue;
+		 
+	}
+	/*oH_OBJECTS_LIST = new Array  (
+		"head.o3dtgz",
+		"eye.o3dtgz",
+		"skull.o3dtgz",
+		"mandible.o3dtgz",
+		"cerebralcortex.o3dtgz",
+		"corpuscallosum.o3dtgz",
+		"thalamus.o3dtgz",
+		"cerebellum.o3dtgz",
+		"medulla_oblongata.o3dtgz",
+		"pituitary.o3dtgz",
+		"pons.o3dtgz",
+		"hypothalamus.o3dtgz"
+		/*"cube.o3dtgz"
+	);*/
+
 	//use the reload boolean in case a reload is necessary
 	
 	if (reload) {
@@ -378,8 +376,8 @@ function loadModels(reload)
 	for (i = 0; i < 5; i++) 
 	{
 		
-		oH_obj[oH_numObj]	=	new Model( loadFile( g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ) );
-		
+		oH_obj[oH_numObj] = new Model( loadFile( g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ) );
+		oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];
 		oH_obj[oH_numObj].addLabel( oH_labelPos[oH_numObj], oH_labelNor[oH_numObj] );
 		oH_numObj++;
 		
@@ -1073,7 +1071,7 @@ function hide()
 		//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
 		//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
 		for( var i=0; i<oH_numObj; i++ ){
-			console.log(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+oH_obj[i].transform.name);
+			//console.log(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+oH_obj[i].transform.name);
 			if(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /,""))
 			{
 				oH_obj[i].transform.translate(100,100,100);
