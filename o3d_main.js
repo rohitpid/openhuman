@@ -377,8 +377,7 @@ function loadModels(reload)
 	{
 		
 		oH_obj[oH_numObj] = new Model( loadFile( g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ) );
-		oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];
-		oH_obj[oH_numObj].addLabel( oH_labelPos[oH_numObj], oH_labelNor[oH_numObj] );
+		oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];		
 		oH_numObj++;
 		
 	}
