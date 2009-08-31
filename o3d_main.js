@@ -350,14 +350,14 @@ function initStep2(clientElements)
 	labelArrowMaterial.getParam('color').value = [0, 0, 0, 1];
 	
 	//Now that everything is setup, load all the models
-	doload();
+	loadModels();
 	
 	updateHUDInfo();
 	
 	
 }
 
-function doload(reload)
+function loadModels(reload)
 {
 	//use the reload boolean in case a reload is necessary
 	
@@ -1064,6 +1064,7 @@ function restoreMeshMaterial()
 	}
 }
 
+
 function hide()
 {
 	// Add it to the same transform
@@ -1071,9 +1072,9 @@ function hide()
 	{
 		//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
 		//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
-		
 		for( var i=0; i<oH_numObj; i++ ){
-			if(g_selectedInfo.shapeInfo.parent.transform.name == oH_obj[i].transform.name)
+			console.log(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+oH_obj[i].transform.name);
+			if(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /,""))
 			{
 				oH_obj[i].transform.translate(100,100,100);
 				g_loadingElement.innerHTML = oH_obj[i].transform.name+" hidden";
