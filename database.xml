@@ -7,40 +7,56 @@
 		<draw_with>none</draw_with>
 		<label>
 			<label_name>head</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>-0.33</x>
+				<y>1.88</y>
+				<z>1.85</z>
+				<normal_x>-0.27</normal_x>
+				<normal_y>0.42</normal_y>
+				<normal_z>0.87</normal_z>
 			</position>
 			<summary>The head of an animal is the rostral part (from anatomical position) that usually comprises the brain, eyes, ears, nose, and mouth (all of which aid in various sensory functions, such as sight, hearing, smell, and taste).</summary>
 			<link>http://en.wikipedia.org/wiki/Head</link>
 		</label>
 		<label>
 			<label_name>mouth</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The mouth, buccal cavity, or oral cavity is the first portion of the alimentary canal that receives food and begins digestion by mechanically breaking up the solid food particles into smaller pieces and mixing them with saliva.</summary>
 			<link>http://en.wikipedia.org/wiki/Mouth</link>
 		</label>
 		<label>
 			<label_name>ear</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The ear is the organ that detects sound and is part of the auditory system. It not only acts as a receiver for sound, but plays a major role in the sense of balance and body position.</summary>
 			<link>http://en.wikipedia.org/wiki/Ear</link>
 		</label>
 		<label>
 			<label_name>nose</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>a nose is a protuberance in vertebrates that houses the nostrils, or nares, which admit and expel air for respiration in conjunction with the mouth.</summary>
 			<link>http://en.wikipedia.org/wiki/Nose</link>
@@ -55,30 +71,42 @@
 		<draw_with>head</draw_with>
 		<label>
 			<label_name>eye</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0.96</x>
+				<y>0.39</y>
+				<z>1.55</z>
+				<normal_x>0.57</normal_x>
+				<normal_y>0.33</normal_y>
+				<normal_z>0.75</normal_z>
 			</position>
 			<summary>Eyes are organs that detect light, and send signals along the optic nerve to the visual and other areas of the brain.</summary>
 			<link>http://en.wikipedia.org/wiki/Eye</link>
 		</label>
 		<label>
 			<label_name>iris</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The iris is a membrane in the eye, responsible for controlling the diameter and size of the pupil and the amount of light reaching the retina. "Eye color" is the color of the iris, which can be green, blue, or brown.</summary>
 			<link>http://en.wikipedia.org/wiki/Iris_(anatomy)</link>
 		</label>
 		<label>
 			<label_name>pupil</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The pupil is an opening located in the center of the iris of the eye that allows light to enter the retina.[1] It appears black because most of the light entering the pupil is absorbed by the tissues inside the eye.</summary>
 			<link>http://en.wikipedia.org/wiki/Pupil</link>
@@ -93,10 +121,14 @@
 		<draw_with>mandible</draw_with>
 		<label>
 			<label_name>cranium (skull)</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>-0.34</x>
+				<y>1.31</y>
+				<z>1.53</z>
+				<normal_x>-0.15</normal_x>
+				<normal_y>0.22</normal_y>
+				<normal_z>0.96</normal_z>
 			</position>
 			<summary>The skull is a bony structure found in the head of many animals. The skull supports the structures of the face and protects the head against injury.</summary>
 			<link>http://en.wikipedia.org/wiki/Skull</link>
@@ -110,10 +142,14 @@
 		<draw_with>skull</draw_with>
 		<label>
 			<label_name>mandible (jawbone)</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0.46</x>
+				<y>-1.48</y>
+				<z>1.25</z>
+				<normal_x>0.52</normal_x>
+				<normal_y>-0.02</normal_y>
+				<normal_z>0.86</normal_z>
 			</position>
 			<summary>The mandible (from Latin mandibula, "jawbone") or inferior maxillary bone forms the lower jaw and holds the lower teeth in place.</summary>
 			<link>http://en.wikipedia.org/wiki/Mandible</link>
@@ -127,10 +163,14 @@
 		<draw_with>cerebellum</draw_with>
 		<label>
 			<label_name>cerebral cortex</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>-0.97</x>
+				<y>0.73</y>
+				<z>0.66</z>
+				<normal_x>-0.44</normal_x>
+				<normal_y>0.02</normal_y>
+				<normal_z>0.09</normal_z>
 			</position>
 			<summary>The cerebral cortex is a structure within the brain that plays a key role in memory, attention, perceptual awareness, thought, language, and consciousness. It constitutes the outermost layer of the cerebrum.</summary>
 			<link>http://en.wikipedia.org/wiki/Cerebral_cortex</link>
@@ -144,10 +184,14 @@
 		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>cerebellum</label_name>
+			<label_bitmap></label_bitmap>
 			<position>a
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The cerebellum (Latin for little brain) is a region of the brain that plays an important role in the integration of sensory perception, coordination and motor control.</summary>
 			<link>http://en.wikipedia.org/wiki/Cerebellum</link>
@@ -161,10 +205,14 @@
 		<draw_with></draw_with>
 		<label>
 			<label_name>corpus callosum</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The corpus callosum is a structure of the mammalian brain in the longitudinal fissure that connects the left and right cerebral hemispheres. It facilitates communication between the two hemispheres. It is the largest white matter structure in the brain, consisting of 200-250 million contralateral axonal projections.</summary>
 			<link>http://en.wikipedia.org/wiki/Corpus_callosum</link>
@@ -178,10 +226,14 @@
 		<draw_with></draw_with>
 		<label>
 			<label_name>thalamus</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The thalamus (from Greek θάλαμος = room, chamber, IPA= /ˈθæləməs/) is a midline paired symmetrical structure within the brain of vertebrate animals, including humans. Its function includes relaying sensation and special sense signals to the cerebral cortex, relaying motor signals to the cerebral cortex, and the regulation of consciousness, sleep and alertness.</summary>
 			<link>http://en.wikipedia.org/wiki/Thalamus</link>
@@ -195,10 +247,14 @@
 		<draw_with>pons</draw_with>
 		<label>
 			<label_name>medulla oblongata</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The medulla oblongata is the lower half of the brainstem. The medulla contains the cardiac, respiratory, vomiting and vasomotor centers and deals with autonomic functions, such as breathing, heart rate and blood pressure.</summary>
 			<link>http://en.wikipedia.org/wiki/Medulla_oblongata</link>
@@ -212,10 +268,14 @@
 		<draw_with>medulla oblongata</draw_with>
 		<label>
 			<label_name>medulla oblongata</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The pons is a structure located on the brain stem. It is cranial(up) to the medulla oblongata, caudal(down) to the midbrain, and ventral(front) to the cerebellum. It relays sensory information between the cerebellum and cerebrum, aids in relaying other messages in the brain, controls arousal, and regulates respiration</summary>
 			<link>http://en.wikipedia.org/wiki/Pons</link>
@@ -229,10 +289,14 @@
 		<draw_with>hypothalamus</draw_with>
 		<label>
 			<label_name>pituitary</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The pituitary gland, or hypophysis, is an endocrine gland about the size of a pea and weighing 0.5 g (0.02 oz.). The pituitary gland secretes hormones regulating homeostasis, including tropic hormones that stimulate other endocrine glands.</summary>
 			<link>http://en.wikipedia.org/wiki/Pituitary</link>
@@ -246,10 +310,14 @@
 		<draw_with>thalamus</draw_with>
 		<label>
 			<label_name>hypothalamus</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>Located below the thalamus and above the brainstem, the hypothalamus is a portion of the brain that contains a number of small nuclei with a variety of functions. One of the most important functions of the hypothalamus is to link the nervous system to the endocrine system via the pituitary gland (hypophysis).</summary>
 			<link>http://en.wikipedia.org/wiki/Hypothalamus</link>
@@ -263,10 +331,14 @@
 		<draw_with></draw_with>
 		<label>
 			<label_name>fornix</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The fornix (Latin, "vault" or "arch") is a C-shaped bundle of fibres (axons) in the brain, and carries signals from the hippocampus to the mammillary bodies and septal nuclei.</summary>
 			<link>http://en.wikipedia.org/wiki/Fornix_of_brain</link>
@@ -280,14 +352,17 @@
 		<draw_with>fornix</draw_with>
 		<label>
 			<label_name>amygdala</label_name>
+			<label_bitmap></label_bitmap>
 			<position>
-				<x></x>
-				<y></y>
-				<z></z>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+				<normal_x>0</normal_x>
+				<normal_y>0</normal_y>
+				<normal_z>0</normal_z>
 			</position>
 			<summary>The amygdalae are almond-shaped groups of nuclei located deep within the medial temporal lobes of the brain in complex vertebrates, including humans. Shown in research to perform a primary role in the processing and memory of emotional reactions, the amygdalae are considered part of the limbic system.</summary>
 			<link>http://en.wikipedia.org/wiki/Amygdala</link>
 		</label>
 	</model> -->
 </openhuman>
-
