@@ -113,6 +113,8 @@ var labelVisible = false;
 var xmlDoc;
 
 var labelDebug = true;
+var fakeTestModel;
+
 var oH_labelPos = [];				//Array containing a list of all the origins for the labeling arrows
 var oH_labelNor = [];
 
@@ -870,6 +872,13 @@ function pick(e)
 		g_selectedInfo = pickInfo;
 		g_loadingElement.innerHTML = g_selectedInfo.shapeInfo.parent.transform.name + ' clicked';
 		
+		if(labelDebug)
+		{
+			//We create a fake model whose constructor draws an arrow. We do that by passing the root transform directly
+			//So there is no mesh involved. Also in place of normal we send the pickinfo object
+			fakeTestModel = new Model( g_client.root,[0,0,0],pickInfo );
+		}
+		
 		
 		if (flashType == "COLOR") {
 			
@@ -892,11 +901,12 @@ function pick(e)
 	}
 }
 
-function dbg_pointOfClick(point)
+function dbg_pointOfClick(point,normal)
 {
 	//Use this function to display the point at which the click occured. This is in order to locate the label arrow's origin
 	// for each mesh. Its called only when label_debug is set to true. The point is the location clicked.
-	document.getElementById("footer").innerHTML = "Point of click X: "+ point[0] + " Y: " + point[1] + "  Z: " + point[2];
+	g_loadingElement.innerHTML = "\</position\> \</x\>"+ Math.round(point[0]*100)/100 + " /x y \>" + Math.round(point[1]*100)/100    + " /y\> z\>" + Math.round(point[2]*100)/100   + " /z\> /position\> "
+													+" normal\> x\> " + Math.round(normal[0]*100)/100  + " /x\> y\> " + Math.round(normal[1]*100)/100 + " /y\> z\> " + Math.round(normal[2]*100)/100 + " /z\> /normal\> ";
 
 	
 }
@@ -1124,7 +1134,7 @@ function resetView()
 	setClientSize();
 	updateCamera();
 	updateProjection();
-	showall()
+	showall();
 }
 
 function Model(o3d_trans,labelPos,normal)
@@ -1146,7 +1156,7 @@ function LabelArrow(loc,nor,attachTo)
 		this.labelPos = null;
 		this.drawArrow(loc,nor);
 		
-		this.label	 = new Label( hudCanvasLib,"Head",this.labelPos[0],this.labelPos[1],100,40 );
+	//	this.label	 = new Label( hudCanvasLib,"Head",this.labelPos[0],this.labelPos[1],100,40 );
 }
 
 LabelArrow.prototype.drawArrow = function(loc,nor){
@@ -1162,7 +1172,7 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 		
 		//If the incoming argument is a pickinfo object, its length will be 1; if its a position on the other hand it will be 3
 		
-		if (loc.length != 3) {
+		if (labelDebug && nor.length!=3) {
 			// Lookup normal of intersection
 			// This code assumes that:
 			// 1) the primitive is indexed (uses an index buffer)
@@ -1170,8 +1180,8 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 			// 3) No offsets are used by the stream
 			// 4) That the primitive has a NORMAL stream
 			
-			var rayInfo = loc.rayIntersectionInfo;
-			var shape = loc.shapeInfo.shape;
+			var rayInfo = nor.rayIntersectionInfo;
+			var shape = nor.shapeInfo.shape;
 			var primitive = shape.elements[0];
 			var primIndex = rayInfo.primitiveIndex;
 			var indexField = primitive.indexBuffer.fields[0];
@@ -1190,10 +1200,11 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 			summedNormal = g_math.normalize(summedNormal);
 									
 			// Get the world position of the collision.
-			worldPosition = loc.worldIntersectionPosition;
-			
+			worldPosition = nor.worldIntersectionPosition;
+					
 			//display the point at debug output
-			dbg_pointOfClick(worldPosition);
+			dbg_pointOfClick(worldPosition,summedNormal);
+		
 			
 		}
 		else { //Fixed position Non-debug functionality
@@ -1290,7 +1301,7 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 		ArrTipTrans.parent = this.attachTo;
 		ArrTipTrans.addShape(trialCube);
 		ArrTipTrans.translate(textPos);		
-		
+				
 		//Transform coord from [-1,1] to [0,2]
 		this.labelPos[0]	+=1;
 		this.labelPos[1] +=1;		
@@ -1304,8 +1315,7 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 		this.labelPos[1] *= g_client.height;
 		
 		this.labelPos[1] = g_client.height - this.labelPos[1];
-		g_loadingElement.innerHTML = "labelPos X:" + this.labelPos[0] + " Y: " + this.labelPos[1]; 
-				 
+						 
 		subTransform2.addShape(pointer);
 						
 		o3djs.pack.preparePack(g_pack, g_viewInfo);
