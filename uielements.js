@@ -165,9 +165,6 @@
 		});
 	});
 
-	$("#info").click(function(){
-	info();
-	});
 	$("#hide").click(function(){
 	hide();
 	});

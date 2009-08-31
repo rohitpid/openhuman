@@ -951,18 +951,6 @@ function hudMouseHandler(e)
 	}
 }
 
-function info()
-{
-	if(g_selectedInfo)
-	{
-//		$("#dialog2").attr("src","http://en.wikipedia.org/wiki/"+bodyParts[objectsPicked[i]]);
-//		$("#dialog2")[0].src="http://en.wikipedia.org/wiki/"+g_selectedInfo.shapeInfo.parent.transform.name;
-//		$("#dialog2").dialog("open");
-		var mywin = window.open('about:blank', 'mywin');
-		mywin.location.href = "http://en.wikipedia.org/wiki/"+g_selectedInfo.shapeInfo.parent.transform.name;
-	}
-}
-
 /*
  * Function that highlights the the object by increasing or decreasing its brightness
  * i.e the brightness, by converting RGB to HSV and back
