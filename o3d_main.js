@@ -115,9 +115,6 @@ var xmlDoc;
 var labelDebug = true;
 var fakeTestModel;
 
-var oH_labelPos = [];				//Array containing a list of all the origins for the labeling arrows
-var oH_labelNor = [];
-
 /**
  * Creates the client area.
  */
@@ -132,29 +129,6 @@ function init()
  */
 function initStep2(clientElements)
 {
-	oH_labelPos = new Array();
-	oH_labelNor = new Array();
-	
-	//For head
-	oH_labelPos[0] = [-0.33,1.88,1.85];
-	oH_labelNor[0] = [-0.27,0.42,0.87];
-	
-	//For eye
-	oH_labelPos[1] = [0.96,0.39,1.55];
-	oH_labelNor[1] = [0.57,-0.33,0.75];
-	
-	//For Skull
-	oH_labelPos[2] = [-0.34,1.31,1.53];
-	oH_labelNor[2] = [-0.15,0.22,0.96];
-	
-	//For Mandible
-	oH_labelPos[3] = [0.46,-1.48,1.25];
-	oH_labelNor[3] = [0.52,-0.02,0.86];
-	
-	//For cerebral_cortex
-	oH_labelPos[4] = [-0.97,0.73,0.66];
-	oH_labelNor[4] = [-0.44,0.02,0.9];
-
 	//Load the XML file database.xml to xmlDoc
 	//so that we can parse data for models and labels later
 	if (window.XMLHttpRequest)
@@ -371,8 +345,6 @@ function loadModels(reload)
 	
 	oH_numObj = 0;
 	oH_obj = new Array();
-	
-	/*******************NOTE : RESTRICTED TO FIRST FIVE MODELS FOR NOW**********************************/
 	
 	for (i = 0; i < oH_OBJECTS_LIST.length; i++) 
 	{	
@@ -1097,7 +1069,8 @@ function hide()
 		//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
 		//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
 		for( var i=0; i<oH_numObj; i++ ){
-			//console.log(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+oH_obj[i].transform.name);
+			//medulla oblongata is mispelled in the blend file so the object name is wrong and it can never be hidden. Need to set names from XML.
+			//console.log("Pick "+g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+" Obj "+oH_obj[i].transform.name.replace(/ /,""));
 			if(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /,""))
 			{
 				oH_obj[i].transform.translate(100,100,100);
