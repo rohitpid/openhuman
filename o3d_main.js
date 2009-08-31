@@ -322,6 +322,8 @@ function initStep2(clientElements)
 	
 	//Now that everything is setup, load all the models
 	loadModels();
+	//Then all the labels
+	loadLabels();
 	
 	updateHUDInfo();
 	
@@ -382,6 +384,33 @@ function loadModels(reload)
 		
 	}
 	g_root=oH_obj;
+}
+
+function loadLabels()
+{
+	//console.log("entering load labels");
+	for(i=0;i<xmlDoc.getElementsByTagName("model_name").length;i++)
+	{
+		//console.log("entering first for");
+		//console.log(xmlDoc.getElementsByTagName("model_name")[i].getElementsByTagName("label")[0].childNodes[0].nodeValue);
+		for(j=0;j<xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label").length;j++)
+		{
+			//console.log("entering second for loop");
+			//console.log(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("normal_y")[0].childNodes[0].nodeValue);
+			oH_obj[i].addLabel(
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_name")[0].childNodes[0].nodeValue,
+			"wedonthavebitmapsyet",
+			(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("x")[0].childNodes[0].nodeValue,
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("y")[0].childNodes[0].nodeValue,
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("z")[0].childNodes[0].nodeValue),
+			(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("normal_x")[0].childNodes[0].nodeValue,
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("normal_y")[0].childNodes[0].nodeValue,
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("normal_z")[0].childNodes[0].nodeValue),
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("summary")[0].childNodes[0].nodeValue,
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("link")[0].childNodes[0].nodeValue
+			);
+		}
+	}
 }
 
 function loadFile(context, path)
@@ -875,7 +904,7 @@ function pick(e)
 			//We create a fake model whose constructor draws an arrow. We do that by passing the root transform directly
 			//So there is no mesh involved. Also in place of normal we send the pickinfo object
 			fakeTestModel = new Model( g_client.root );
-			fakeTestModel.addLabel([0,0,0],pickInfo);
+			fakeTestModel.addLabel("debug","bitmap",[0,0,0],pickInfo,"summary","link");
 		}
 		
 		
@@ -1147,16 +1176,20 @@ function Model(o3d_trans)
 	
 }
 
-Model.prototype.addLabel = function(labelPos,labelNor){
-	
+Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
+{
 	//add a label arrow first
-	this.labels[this.num_labels] = new LabelArrow( labelPos,labelNor,this.transform );
-	
+	this.labels[this.num_labels] = new LabelArrow( pos,norm,this.transform );
+
 	//TODO: add a label (text)
-	
+	this.labels[this.num_labels].name = name;
+	this.labels[this.num_labels].pos = pos;
+	this.labels[this.num_labels].normal = norm;
+	this.labels[this.num_labels].summary = summary;
+	this.labels[this.num_labels].link = link;
+
 	//increase the label count
-	this.num_labels++;
-	
+	this.num_labels++;	
 };
 
 
