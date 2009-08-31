@@ -188,8 +188,10 @@
 	removeLabels();
 	});
 	$("#debug_toggle").toggle(function() {
+		//console.log("toggle true");
 		labelDebug = true;
 	}, function() {
+		//console.log("toggle false");
 		labelDebug = false;
 	});
 });
