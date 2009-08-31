@@ -179,6 +179,7 @@
 	});
 	$("#reset").click(function(){
 	showall();
+	loadOriginalCameraView();
 	});
 	$("#instructions").click(function(){
 	g_loadingElement.innerHTML ="Use the Controls above to zoom,scale,rotate and pan around the body<br></br>Other Features: <br>-- Right click on an object to select organ<br>-- Info button opens wikipedia article about organ<br>-- Hide button hides selected organ <br>-- Hide All button hides all organs<br>-- Show All button shows all organs"

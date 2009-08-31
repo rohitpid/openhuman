@@ -59,6 +59,7 @@ var oH_obj;
 var oH_numObj;
 var oH_OBJECTS_LIST;
 var oH_ASSET_PATH;
+var oH_originalView;
 
 var removedObjects = [];
 var g_hudRoot;
@@ -299,6 +300,9 @@ function initStep2(clientElements)
 	//Then all the labels
 	loadLabels();
 	
+	//Store camera view for Reset View
+	storeOriginalCameraView();
+	
 	updateHUDInfo();
 	
 	
@@ -359,6 +363,7 @@ function loadModels(reload)
 function loadLabels()
 {
 	//console.log("entering load labels");
+	//console.log(xmlDoc.getElementsByTagName("model")[0].getElementsByTagName("label")[0].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
 	for(i=0;i<xmlDoc.getElementsByTagName("model_name").length;i++)
 	{
 		//console.log("entering first for");
@@ -366,10 +371,10 @@ function loadLabels()
 		for(j=0;j<xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label").length;j++)
 		{
 			//console.log("entering second for loop");
-			//console.log(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("normal_y")[0].childNodes[0].nodeValue);
+			//console.log(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
 			oH_obj[i].addLabel(
 			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_name")[0].childNodes[0].nodeValue,
-			"wedonthavebitmapsyet",
+			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue,
 			[new Number(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("x")[0].childNodes[0].nodeValue).valueOf(),
 			new Number(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("y")[0].childNodes[0].nodeValue).valueOf(),
 			new Number(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("position")[0].getElementsByTagName("z")[0].childNodes[0].nodeValue).valueOf()],
@@ -514,6 +519,33 @@ function loadFile(context, path)
 
 	return mesh;
 	
+}
+
+function storeOriginalCameraView()
+{
+/*	oH_originalView = new Array(4)
+	for(i=0;i<4;i++)
+	{
+		oH_originalView[i] = new Array(4);
+	}
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<4;j++)
+		{
+			oH_originalView[i][j] = g_camera.view[i][j];
+		}
+	}*/
+}
+
+function loadOriginalCameraView()
+{
+/*	for(i=0;i<4;i++)
+	{
+		for(j=0;j<4;j++)
+		{
+			g_camera.view[i][j] = oH_originalView[i][j];
+		}
+	}*/
 }
 
 function updateInfo()
