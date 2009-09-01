@@ -1141,6 +1141,11 @@ function show()
 
 function hideall()
 {
+	//We have to move all objects back to default state so that
+	//we don't end up with objects moved to (200,200,200) if 
+	//they have already been hidden once so do showall() first.
+	showall();
+
 	for (var i = 0; i<oH_obj.length;i++)
 	{
 		oH_obj[i].transform.translate(100,100,100);
