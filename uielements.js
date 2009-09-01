@@ -182,7 +182,7 @@
 	loadOriginalCameraView();
 	});
 	$("#instructions").click(function(){
-	g_loadingElement.innerHTML ="Use the Controls above to zoom,scale,rotate and pan around the body<br></br>Other Features: <br>-- Right click on an object to select organ<br>-- Info button opens wikipedia article about organ<br>-- Hide button hides selected organ <br>-- Hide All button hides all organs<br>-- Show All button shows all organs"
+	g_loadingElement.innerHTML ="<li>Use the controls above to zoom,scale,rotate and pan around the body.</li><li>The mouse can be used to rotate the objects by clicking and dragging.</li><li>The mouse scrollwheel can be used to zoom in/out.</li><li>Click on an object to select organ</li><li>Information about organs from wikipedia is displayed in this box.</li><li>Hide button hides selected organ.</li><li>Show button shows last hidden organ.</li><li>Hide All button hides all organs</li><li>Show All button shows all organs</li>"
 	runEffect("explode");
 	});
 	$("#label_toggle").click(function(){

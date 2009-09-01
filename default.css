@@ -34,6 +34,8 @@ button.fg-button .ui-icon{ left: -1.2em;}
 #information { width: 270px; padding: 0.4em; position: relative; background: hsla(210, 100%, 75%, 0.5);}
 #information h3 { margin: 0; padding: 0.4em; text-align: center; }
 
+.sansserif{font-family:Verdana,Arial,Sans-serif}
+.serif{font-family:"Times New Roman",Georgia,Serif}
 
 #zoom_label
 {
@@ -229,7 +231,7 @@ span.invisible
 #top
 {
 	padding: 8px;
-	background-color: #ddd;
+	background-color: #dddddd;
 	border-bottom: 1px solid gray;
 }
 
@@ -279,7 +281,7 @@ span.invisible
 
 #o3d
 {
-	width:70%;
+	width:75%;
 	height:83%;
 	position:relative;
 	display: inline-block;
@@ -298,7 +300,7 @@ span.invisible
 	margin: 0;
 	padding: .5em;
 	color: #333;
-	background-color: #ddd;
+	background-color: #dddddd;
 	border-top: 1px solid gray;
 	border-left: 1px solid gray;
 	height: 16px;
