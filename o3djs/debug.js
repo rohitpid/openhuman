@@ -223,7 +223,16 @@ o3djs.debug.createLineShape = function(pack,
  * @param {!Array.<number>} opt_indices array of indices in pairs.
  */
 o3djs.debug.VertexInfo = function(opt_vertices, opt_indices) {
+  /**
+   * The vertices for this VertexInfo.
+   * @type {!Array.<o3djs.math.Vector3>}
+   */
   this.vertices = opt_vertices || [];
+
+  /**
+   * The vertex indices this VertexInfo.
+   * @type {!Array.<number>}
+   */
   this.indices = opt_indices || [];
 };
 
@@ -252,6 +261,25 @@ o3djs.debug.VertexInfo.prototype.Offset = {
   Y: 1,
   Z: 2
 };
+
+/**
+ * Computes the number of vertices in this vertex info.
+ * @return {number} The number of vertices.
+ */
+o3djs.debug.VertexInfo.prototype.numVertices = function() {
+  return this.vertices.length / 3;
+};
+
+
+/**
+ * Given the number of a vertex returns the index in the array where
+ * the coordinates of that vertex vertexIndex.
+ * @param {number} vertexNumber The vertex number.
+ * @return {number} The index where that vertex begins.
+ */
+o3djs.debug.VertexInfo.prototype.vertexIndex = function(vertexNumber) {
+  return vertexNumber * 3;
+}
 
 /**
  * Adds a vertex.
@@ -289,6 +317,7 @@ o3djs.debug.VertexInfo.prototype.createShape = function(
                                      this.indices);
 };
 
+
 /**
  * Reorients the vertex positions of this vertexInfo by the
  * given matrix. In other words it multiplies each vertex by the
@@ -297,10 +326,6 @@ o3djs.debug.VertexInfo.prototype.createShape = function(
  */
 o3djs.debug.VertexInfo.prototype.reorient = function(matrix) {
   var math = o3djs.math;
-  // Assume if it has a length it's not a Matrix4
-  if (matrix.length) {
-    matrix = math.matrix4.copy(matrix);
-  }
   var numVerts = this.numVertices();
   for (var v = 0; v < numVerts; ++v) {
     var index = this.vertexIndex(v);
@@ -490,8 +515,26 @@ o3djs.debug.DebugLine = function(debugLineGroup) {
   this.transform_ = pack.createObject('Transform');
   this.transform_.name = O3D_DEBUG_LINE_SHAPE_NAME;
   this.transform_.addShape(debugLineGroup.getLineShape());
+
+  /**
+   * The start position of the line.
+   * @private
+   * @type {!o3djs.math.Vector3}
+   */
   this.start_ = [0, 0, 0];
+
+  /**
+   * The start position of the line.
+   * @private
+   * @type {!o3djs.math.Vector3}
+   */
   this.end_ = [0, 0, 0];
+
+  /**
+   * The color param for the line.
+   * @private
+   * @type {!o3d.ParamFloat4}
+   */
   this.colorParam_ = this.transform_.createParam(
       O3D_DEBUG_COLOR_PARAM_NAME, 'ParamFloat4');
   this.colorParam_.value = debugLineGroup.getColor();
@@ -599,10 +642,39 @@ o3djs.debug.DebugLine.prototype.remove = function() {
  * @param {!o3d.Transform} root Transform to put debug lines under.
  */
 o3djs.debug.DebugLineGroup = function(debugHelper, root) {
+  /**
+   * The default color to make new lines.
+   * @private
+   * @type {!o3djs.math.Vector4}
+   */
   this.currentColor_ = [1, 1, 1, 1];
+
+  /**
+   * The transforms for all the lines in this group indexed by clientId.
+   * @private
+   * @type {!Object.<number, !o3d.Transform>}
+   */
   this.lineTransforms_ = { };
+
+  /**
+   * The transforms for all the unused lines in this group indexed by clientId.
+   * @private
+   * @type {!Object.<number, !o3d.Transform>}
+   */
   this.freeLineTransforms_ = { };
+
+  /**
+   * The DebugHelper managing this DebugLineGroup.
+   * @private
+   * @type {!o3djs.debug.DebugHelper}
+   */
   this.debugHelper_ = debugHelper;
+
+  /**
+   * The root transform for lines in this group.
+   * @private
+   * @type {!o3d.Transform}
+   */
   this.root_ = root;
 };
 

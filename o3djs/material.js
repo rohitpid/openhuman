@@ -337,6 +337,83 @@ o3djs.material.createBasicMaterial = function(pack,
 };
 
 /**
+ * This function creates a constant material. No lighting. It is especially
+ * useful for debugging shapes and 2d UI elements.
+ *
+ * @param {!o3d.Pack} pack Pack to manage created objects.
+ * @param {!o3djs.rendergraph.ViewInfo} viewInfo as returned from
+ *     o3djs.rendergraph.createBasicView.
+ * @param {(!o3djs.math.Vector4|!o3d.Texture)} colorOrTexture Either a color in
+ *     the format [r, g, b, a] or an O3D texture.
+ * @param {boolean} opt_transparent Whether or not the material is transparent.
+ *     Defaults to false.
+ * @return {!o3d.Material} The created material.
+ */
+o3djs.material.createConstantMaterial = function(pack,
+                                                 viewInfo,
+                                                 colorOrTexture,
+                                                 opt_transparent) {
+  var material = pack.createObject('Material');
+  material.drawList = opt_transparent ? viewInfo.zOrderedDrawList :
+                                        viewInfo.performanceDrawList;
+
+  // If it has a length assume it's a color, otherwise assume it's a texture.
+  if (colorOrTexture.length) {
+    material.createParam('emissive', 'ParamFloat4').value = colorOrTexture;
+  } else {
+    var paramSampler = material.createParam('emissiveSampler', 'ParamSampler');
+    var sampler = pack.createObject('Sampler');
+    paramSampler.value = sampler;
+    sampler.texture = colorOrTexture;
+  }
+
+  o3djs.material.attachStandardEffect(pack, material, viewInfo, 'constant');
+
+  return material;
+};
+
+/**
+ * This function creates 2 color procedureal texture material.
+ *
+ * @see o3djs.material.createBasicMaterial
+ *
+ * @param {!o3d.Pack} pack Pack to manage created objects.
+ * @param {!o3djs.rendergraph.ViewInfo} viewInfo as returned from
+ *     o3djs.rendergraph.createBasicView.
+ * @param {!o3djs.math.Vector4} opt_color1 a color in the format [r, g, b, a].
+ *     Defaults to a medium blue-green.
+ * @param {!o3djs.math.Vector4} opt_color2 a color in the format [r, g, b, a].
+ *     Defaults to a light blue-green.
+ * @param {boolean} opt_transparent Whether or not the material is transparent.
+ *     Defaults to false.
+ * @param {number} opt_checkSize Defaults to 10 units.
+ * @return {!o3d.Material} The created material.
+ */
+o3djs.material.createCheckerMaterial = function(pack,
+                                                viewInfo,
+                                                opt_color1,
+                                                opt_color2,
+                                                opt_transparent,
+                                                opt_checkSize) {
+  opt_color1 = opt_color1 || [0.4, 0.5, 0.5, 1];
+  opt_color2 = opt_color2 || [0.6, 0.8, 0.8, 1];
+  opt_checkSize = opt_checkSize || 10;
+
+  var effect = o3djs.effect.createCheckerEffect(pack);
+  var material = pack.createObject('Material');
+  material.effect = effect;
+  material.drawList = opt_transparent ? viewInfo.zOrderedDrawList :
+                                        viewInfo.performanceDrawList;
+  o3djs.effect.createUniformParameters(pack, effect, material);
+
+  material.getParam('color1').value = opt_color1;
+  material.getParam('color2').value = opt_color2;
+  material.getParam('checkSize').value = opt_checkSize;
+
+  return material;
+};
+
+/**
  * Creates a material for an effect loaded from a file.
  * If the effect has already been loaded in the pack it will be reused.
  * @param {!o3d.Pack} pack Pack to create effect in.
@@ -350,7 +427,7 @@ o3djs.material.createMaterialFromFile = function(pack, url, drawList) {
   var material = pack.createObject('Material');
   material.effect = effect;
   material.drawList = drawList;
-  effect.createUniformParameters(material);
+  o3djs.effect.createUniformParameters(pack, effect, material);
 
   return material;
 };

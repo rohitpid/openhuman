@@ -632,6 +632,7 @@ o3djs.util.toAbsoluteUri = function(uri) {
 
 /**
  * The script URIs.
+ * @private
  * @type {!Array.<string>}
  */
 o3djs.util.scriptUris_ = [];
@@ -666,9 +667,21 @@ o3djs.util.isScriptUri = function(uri) {
 };
 
 /**
+ * Returns whether or not this is a script tag we want. Currently that is
+ * only script tags with an id that starts with "o3d".
+ * @private
+ * @param {!Element} scriptElement The script element to check.
+ * @return {boolean} True if we want this script tag.
+ */
+o3djs.util.isWantedScriptTag_ = function(scriptElement) {
+  return scriptElement.id && scriptElement.id.match(/^o3dscript/);
+};
+
+/**
  * Concatenate the text of all the script tags in the document and invokes
  * the callback when complete. This function is asynchronous if any of the
  * script tags reference JavaScript through a URI.
+ * @private
  * @return {string} The script tag text.
  */
 o3djs.util.getScriptTagText_ = function() {
@@ -678,7 +691,8 @@ o3djs.util.getScriptTagText_ = function() {
     var scriptElement = scriptElements[i];
     if (scriptElement.type === '' ||
         scriptElement.type === 'text/javascript') {
-      if ('text' in scriptElement && scriptElement.text) {
+      if ('text' in scriptElement && scriptElement.text &&
+          o3djs.util.isWantedScriptTag_(scriptElement)) {
         scriptTagText += scriptElement.text;
       }
       if ('src' in scriptElement && scriptElement.src &&
@@ -851,7 +865,11 @@ o3djs.util.makeClients = function(callback,
         for (var cc = 0; cc < clientElements.length; ++cc) {
           var element = clientElements[cc];
           o3d = element.o3d;
-          if (!o3d) {
+          var ready = o3d &&
+              element.client &&
+              element.client.rendererInitStatus >
+                  o3djs.util.rendererInitStatus.UNINITIALIZED;
+          if (!ready) {
             if (chromeWorkaround) {
               if (element.style.width != '100%') {
                 element.style.width = '100%';

@@ -115,6 +115,9 @@ var xmlDoc;
 
 var labelDebug = false;
 var fakeTestModel;
+var oH_Logo;
+var billboardMaterial;
+var g_globalParams;
 
 /**
  * Creates the client area.
@@ -278,7 +281,8 @@ function initStep2(clientElements)
  
   			g_materials[ii] = material;
  	 }
-	  g_materials[0].drawList = g_hudViewInfo.zOrderedDrawList;
+	 // g_materials[0].drawList = g_hudViewInfo.zOrderedDrawList;
+	  g_materials[0].drawList = g_viewInfo.zOrderedDrawList;
 	  
 	  // Create an instance of the canvas utilities library.
 	hudCanvasLib = o3djs.canvas.create(g_pack, g_hudRoot, g_hudViewInfo);	
@@ -295,18 +299,38 @@ function initStep2(clientElements)
 	//Set arrow material to black
 	labelArrowMaterial.getParam('color').value = [0, 0, 0, 1];
 	
+	 // Load all the labelText textures.
+     var loader = o3djs.loader.createLoader(initStep3);
+ 	 for (var ii = 0; ii < g_textureUrls.length; ++ii) {
+     loadTexture(loader, g_textureUrls[ii], ii);
+     }
+     loader.finish();	
+	
+}
+
+function initStep3(){
+
+	/*
+	//REMOVE THIS IF WE CAN DO AWAY WITH THE LOADER CODE
+	oH_Logo = new Image(g_textures[0], true,g_client.root,"logo");
+	*/
+	
 	//Now that everything is setup, load all the models
 	loadModels();
+	
+	//Create a material for the plane on which to put the label bitmaps
+	//NOTE: This material uses the billboard shader from the billboards example at o3d
+	billboardMaterial = o3djs.material.createMaterialFromFile( g_pack, 
+															   'shaders/billboard.shader', 
+															   g_viewInfo.zOrderedDrawList
+															  );
+	
 	//Then all the labels
 	loadLabels();
 	
-	//Store camera view for Reset View
-	storeOriginalCameraView();
-	
 	updateHUDInfo();
-	
-	
-}
+
+}	
 
 function loadModels(reload)
 {
@@ -321,6 +345,7 @@ function loadModels(reload)
 		oH_OBJECTS_NAMES[i]=xmlDoc.getElementsByTagName("model_name")[i].childNodes[0].nodeValue;
 		 
 	}
+	
 	/*oH_OBJECTS_LIST = new Array  (
 		"head.o3dtgz",
 		"eye.o3dtgz",
@@ -1190,7 +1215,8 @@ function Model(o3d_trans)
 {
 	this.transform = o3d_trans;
 	this.name	   = null;
-	this.labels	   = new Array();
+	this.label_arrows	   = new Array();
+	this.labels			   = new Array();
 	this.num_labels = 0;
 	
 	
@@ -1199,15 +1225,17 @@ function Model(o3d_trans)
 Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 {
 	//add a label arrow first
-	this.labels[this.num_labels] = new LabelArrow( pos,norm,this.transform );
+	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform );
+	
+	this.label_arrows[this.num_labels].name 		= name;
+	this.label_arrows[this.num_labels].pos 			= pos;
+	this.label_arrows[this.num_labels].normal 		= norm;
+	this.label_arrows[this.num_labels].summary 		= summary;
+	this.label_arrows[this.num_labels].link 		= link;
 
-	//TODO: add a label (text)
-	this.labels[this.num_labels].name = name;
-	this.labels[this.num_labels].pos = pos;
-	this.labels[this.num_labels].normal = norm;
-	this.labels[this.num_labels].summary = summary;
-	this.labels[this.num_labels].link = link;
-
+	//add a label
+	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform);	
+	
 	//increase the label count
 	this.num_labels++;	
 };
@@ -1215,13 +1243,14 @@ Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 
 function LabelArrow(loc,nor,attachTo)
 {
-		this.attachTo = attachTo;
+	this.attachTo = attachTo;
 		this.labelArrowTransform  = g_pack.createObject('Transform');		
 		this.labelPos = null;
 		
 		this.pos = loc;
 		this.nor = nor;
 		this.drawArrow(this.pos,this.nor);
+		
 		
 }
 
@@ -1350,12 +1379,19 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 				textPos = g_math.addVector(g_math.addVector(worldPosition , g_math.mulVectorScalar(dir,-depth) ) , [-depth2,0,0] );			
 		}
 	
+		/* 
+		 * PLEASE DONT REMOVE THE FOLLOWING COMMENTED CODE. IT TRANSFORMS FROM WORLD TO SCREEN COORDS
+		 * AND IS LEFT IN THERE FOR FUTURE REFERENCE. YOU CAN DECAPITALIZE THIS REQUEST COMMENT IF YOU WANT
+		 * TO MAKE IT SOUND A LITTLE LESS STERN AND LESS LOUD.
+		  * /	
 		//textPos is now in world coordinates. We need to now transform this to the final coordinates on the screen
 		//To this we'll have to multiply it with the view and projection matrix
 		
+		/*
 		var ViewProjectionMatrix = g_math.matrix4.compose(g_viewInfo.drawContext.projection,g_viewInfo.drawContext.view);
 		
 		this.labelPos				= g_math.matrix4.transformPoint(ViewProjectionMatrix, textPos );
+		
 		
 		var trialCube = o3djs.primitives.createCube(
 																			g_pack,
@@ -1367,7 +1403,7 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 		ArrTipTrans.parent = this.attachTo;
 		ArrTipTrans.addShape(trialCube);
 		ArrTipTrans.translate(textPos);		
-				
+		
 		//Transform coord from [-1,1] to [0,2]
 		this.labelPos[0]	+=1;
 		this.labelPos[1] +=1;		
@@ -1381,20 +1417,151 @@ LabelArrow.prototype.drawArrow = function(loc,nor){
 		this.labelPos[1] *= g_client.height;
 		
 		this.labelPos[1] = g_client.height - this.labelPos[1];
-						 
+		*/
+		
+		this.labelPos = textPos;				 
 		subTransform2.addShape(pointer);
 						
 		o3djs.pack.preparePack(g_pack, g_viewInfo);
 	
 };
 
-LabelArrow.prototype.hideArrow =function(){
+/*
+LabelArrow.prototype.hideArrow() =function(){
 		
-	this.labelTransform.visible = false;
-	//document.getElementById("footer").innerHTML = "";
+	labelTransform.visible = false;
+	document.getElementById("footer").innerHTML = "";
 
 };
 
+*/
+
+function Label( /*imageTexture,*/position, attachTo){
+	
+	
+	this.position	 = position;
+	this.attachTo	 = attachTo;
+	this.labelHolder = g_pack.createObject('Transform');
+	this.labelHolder.parent = this.attachTo;
+	
+	this.labelHolder.translate(position);
+	
+	if(g_textures[0])
+	this.image = new Image(g_textures[0],false,this.labelHolder,"trial");
+	else
+	alert("No texture");
+	
+	this.currNor = null;
+}
+
+/**
+ *  Encapsulation of an image
+ * @param {Object} texure The texture to use in the Image
+ * @param {boolean} opt_topLeft indicating the positioning of the texture
+ * @param {Object} attachTo Parent Transform to attach this image to
+ * 
+ */
+function Image(texture, opt_topLeft,attachTo,name) {
+	
+  // create a transform for positioning
+  this.transform = g_pack.createObject('Transform');
+  this.transform.parent = attachTo;
+ 
+  // create a transform for scaling to the size of the image just so
+  // we don't have to manage that manually in the transform above.
+  this.scaleTransform = g_pack.createObject('Transform');
+  this.scaleTransform.parent = this.transform;
+  this.scaleTransform.name = name;
+  
+  // setup the sampler for the texture
+  
+  var sampler = billboardMaterial.getParam('texSampler0').value;
+  sampler.texture = texture;
+  sampler.addressModeU = g_o3d.Sampler.CLAMP;
+  sampler.addressModeV = g_o3d.Sampler.CLAMP;
+
+ /*
+  // Setup our UV offsets and color multiplier
+  this.paramColorMult = this.scaleTransform.createParam('colorMult','ParamFloat4');
+ 
+  this.setColor(1, 1, 1, 1);
+ */
+
+	// Create and bind standard params so we can see the light parameters
+  // for the standard shaders globably.
+  g_globalParams = o3djs.material.createAndBindStandardParams(g_pack);
+  g_globalParams.lightWorldPos.value = [30, 60, 40];
+  g_globalParams.lightColor.value 		= [1, 1, 1, 1];
+
+
+  // Create a 2d plane for images. createPlane makes an XZ plane by default
+  // so we pass in matrix to rotate it to an XY plane. We could do
+  // all our manipluations in XZ but most people seem to like XY for 2D.
+  	this.plane = o3djs.primitives.createPlane(
+  					    g_pack,
+   					    billboardMaterial,
+					 	0.5,
+   					    0.5,
+   					    1,
+   					    1,
+						g_math.matrix4.rotationX( g_math.degToRad(90) )
+						);
+						
+						/*
+						,
+  					    [[1, 0, 0, 0],
+  					    [0, 0, 1, 0],
+   					    [0,1, 0, 0],
+  					    [0, 0, 0, 1]]);
+ 						*/
+ 
+
+  this.scaleTransform.addShape(this.plane);
+  
+  if (opt_topLeft) {
+    this.scaleTransform.translate(texture.width / 2, texture.height / 2, 0);
+  }
+  
+  this.scaleTransform.scale(texture.width, -texture.height, 1);
+     
+   o3djs.pack.preparePack(g_pack, g_viewInfo);
+   updateInfo();
+}
+
+/**
+ * Sets the color multiplier for the image.
+ * @param {number} r Red component.
+ * @param {number} g Green component.
+ * @param {number} b Blue component.
+ * @param {number} a Alpha component.
+ */
+Image.prototype.setColor = function(r, g, b, a) {
+  this.paramColorMult.set(r, g, b, a);
+};
+
+
+
+/**
+ * Loads a texture and saves it in the g_textures array.
+ * @param {Object} loader The loader to load with.
+ * @param {stinrg} url of texture to load
+ * @param {number} index Index to put texture in g_textures
+ * 
+ */
+function loadTexture(loader, url, index) {
+  loader.loadTexture(g_pack, url, function(texture, exception) {
+    if (exception) {
+      alert(exception);
+    } else {
+      g_textures[index] = texture; 
+    }
+  });
+}
+
+
+
+
+/*
 function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
 {
 	//Text in Dialog
@@ -1449,15 +1616,14 @@ function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
                               		 this.textPaint);
 	 this.canvasQuad.updateTexture();
 }
+*/
+
 
 
 /*
 *	The following RGB-HSV code is courtesy of Matt Haynes
 * 	taken from http://matthaynes.net/blog/2008/08/07/javascript-colour-functions/
 */
-
-
-
 /**
 * Converts HSV to RGB value.
 *

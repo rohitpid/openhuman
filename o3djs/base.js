@@ -188,6 +188,14 @@ o3djs.getObjectByName = function(name, opt_obj) {
  * @param {string} rule Rule to include, in the form o3djs.package.part.
  */
 o3djs.require = function(rule) {
+  // TODO(gman): For some unknown reason, when we call
+  // o3djs.util.getScriptTagText_ it calls
+  // document.getElementsByTagName('script') and for some reason the scripts do
+  // not always show up. Calling it here seems to fix that as long as we
+  // actually ask for the length, at least in FF 3.5.1 It would be nice to
+  // figure out why.
+  var dummy = document.getElementsByTagName('script').length;
+
   // if the object already exists we do not need do do anything
   if (o3djs.getObjectByName(rule)) {
     return;
@@ -638,6 +646,22 @@ o3djs.base.ready = function() {
  */
 o3djs.base.maybeDeobfuscateFunctionName_ = function(name) {
   return name;
+};
+
+/**
+ * Makes one class inherit from another.
+ * @param {!Object} subClass Class that wants to inherit.
+ * @param {!Object} superClass Class to inherit from.
+ */
+o3djs.base.inherit = function(subClass, superClass) {
+  /**
+   * TmpClass.
+   * @ignore
+   * @constructor
+   */
+  var TmpClass = function() { };
+  TmpClass.prototype = superClass.prototype;
+  subClass.prototype = new TmpClass();
 };
 
 /**
