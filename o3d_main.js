@@ -118,6 +118,7 @@ var fakeTestModel;
 var oH_Logo;
 var billboardMaterial;
 var g_globalParams;
+var tempTex;
 
 /**
  * Creates the client area.
@@ -131,18 +132,16 @@ function init()
  * Initializes O3D and loads the scene into the transform graph.
  * @param {Array} clientElements Array of o3d object elements.
  */
-function initStep2(clientElements)
-{
+function initStep2(clientElements){
 	//Load the XML file database.xml to xmlDoc
 	//so that we can parse data for models and labels later
-	if (window.XMLHttpRequest)
-	{
-	AJAXRequest=new window.XMLHttpRequest();
-	AJAXRequest.open("GET","database.xml",false);
-	AJAXRequest.send("");
-	xmlDoc = AJAXRequest.responseXML;
+	if (window.XMLHttpRequest) {
+		AJAXRequest = new window.XMLHttpRequest();
+		AJAXRequest.open("GET", "database.xml", false);
+		AJAXRequest.send("");
+		xmlDoc = AJAXRequest.responseXML;
 	}
-
+	
 	g_loadingElement = document.getElementById('info_text');
 	
 	g_o3dElement = clientElements[0];
@@ -150,31 +149,27 @@ function initStep2(clientElements)
 	g_math = o3djs.math;
 	g_quaternions = o3djs.quaternions;
 	g_client = g_o3dElement.client;
-
+	
 	g_mainPack = g_client.createPack();
-
-
+	
+	
 	// Create the render graph for a view.
-	g_viewInfo = o3djs.rendergraph.createBasicView(
-		g_mainPack,
-		g_client.root,
-		g_client.renderGraphRoot
-	);
-
+	g_viewInfo = o3djs.rendergraph.createBasicView(g_mainPack, g_client.root, g_client.renderGraphRoot);
+	
 	//Add a debug line to use for testing 
-	   g_debugHelper = o3djs.debug.createDebugHelper(g_client.createPack(),g_viewInfo);
-	  g_debugLineGroup = g_debugHelper.createDebugLineGroup(g_client.root);
- 	  g_debugLine = g_debugLineGroup.addLine();
-  	  g_debugLine.setColor([0,1,0,1]);
-
+	g_debugHelper = o3djs.debug.createDebugHelper(g_client.createPack(), g_viewInfo);
+	g_debugLineGroup = g_debugHelper.createDebugLineGroup(g_client.root);
+	g_debugLine = g_debugLineGroup.addLine();
+	g_debugLine.setColor([0, 1, 0, 1]);
+	
 	g_lastRot = g_math.matrix4.identity();
 	g_thisRot = g_math.matrix4.identity();
-
+	
 	var root = g_client.root;
-
+	
 	g_aball = o3djs.arcball.create(100, 100);
 	setClientSize();
-
+	
 	// Set the light at the same position as the camera to create a headlight
 	// that illuminates the object straight on.
 	var paramObject = g_mainPack.createObject('ParamObject');
@@ -182,129 +177,119 @@ function initStep2(clientElements)
 	g_camera.target = [0, 0, 0];
 	g_camera.eye = [0, 0, 5];
 	updateCamera();
-
+	
 	o3djs.event.addEventListener(g_o3dElement, 'mousedown', startDragging);
 	o3djs.event.addEventListener(g_o3dElement, 'mousemove', drag);
 	o3djs.event.addEventListener(g_o3dElement, 'mouseup', stopDragging);
 	o3djs.event.addEventListener(g_o3dElement, 'wheel', scrollMe);
 	o3djs.event.addEventListener(g_o3dElement, 'keypress', buttonRotate);
-  
-	g_client.setRenderCallback(onRender); 
+	
+	g_client.setRenderCallback(onRender);
 	flashing = false;
 	flashOrigColor = null;
 	flashObject = null;
-		
+	
 	//Create the main pack (NOTE: This was previously done inside loadFile()	
 	g_pack = g_client.createPack();
-		
-     // Create a material for highlighting.
-  	 g_highlightMaterial = g_pack.createObject('Material');
-  	 g_highlightMaterial.drawList = g_viewInfo.performanceDrawList;
-	 
- 	 var effect = g_pack.createObject('Effect');
- 	 o3djs.effect.loadEffect(effect, 'shaders/solid-color.shader');
- 	 g_highlightMaterial.effect = effect;
-	 
- 	 effect.createUniformParameters(g_highlightMaterial);
-	 
- 	 // Setup a state to bring the lines forward.
- 	 var state = g_pack.createObject('State');
- 	 state.getStateParam('PolygonOffset2').value = -1.0;
- 	 state.getStateParam('FillMode').value = g_o3d.State.WIREFRAME;
-	 g_highlightMaterial.state = state;
-	 origMaterial = new Array();
-	 g_highlightShape = null;
+	
+	// Create a material for highlighting.
+	g_highlightMaterial = g_pack.createObject('Material');
+	g_highlightMaterial.drawList = g_viewInfo.performanceDrawList;
+	
+	var effect = g_pack.createObject('Effect');
+	o3djs.effect.loadEffect(effect, 'shaders/solid-color.shader');
+	g_highlightMaterial.effect = effect;
+	
+	effect.createUniformParameters(g_highlightMaterial);
+	
+	// Setup a state to bring the lines forward.
+	var state = g_pack.createObject('State');
+	state.getStateParam('PolygonOffset2').value = -1.0;
+	state.getStateParam('FillMode').value = g_o3d.State.WIREFRAME;
+	g_highlightMaterial.state = state;
+	origMaterial = new Array();
+	g_highlightShape = null;
 	
 	/*************HUD IMPLEMENTATION**************************/
-		 
-	 //Create root transform for HUD
-	 g_hudRoot = g_pack.createObject('Transform');
-	 
-	 // Create a second view for the hud. 
-  	g_hudViewInfo = o3djs.rendergraph.createBasicView(
-        g_pack,
-        g_hudRoot,
-        g_client.renderGraphRoot);
- 
- 	 // Make sure the hud gets drawn after the 3d stuff
- 	 g_hudViewInfo.root.priority = g_viewInfo.root.priority + 1;
- 
-	  // Turn off clearing the color for the hud since that would erase the 3d
-	  // parts but leave clearing the depth and stencil so the HUD is unaffected
-	  // by anything done by the 3d parts.
- 	 g_hudViewInfo.clearBuffer.clearColorFlag = false;
- 
- 	 // Set culling to none so we can flip images using rotation or negative scale.
- 	 g_hudViewInfo.zOrderedState.getStateParam('CullMode').value = g_o3d.State.CULL_NONE;
- 	 g_hudViewInfo.zOrderedState.getStateParam('ZWriteEnable').value = false;
- 
-	  // Create an orthographic matrix for 2d stuff in the HUD.
- 	 // We assume the area is 800 pixels by 600 pixels and therefore we can
- 	 // position things using a 0-799, 0-599 coordinate system. If we change the
- 	 // size of the client area everything will get scaled to fix but we don't
- 	 // have to change any of our code. See 2d.html
-	 	
-	 g_hudViewInfo.drawContext.projection = g_math.matrix4.orthographic(
- 	     0 + 0.5,
- 	     g_client.width  + 0.5,
- 	     g_client.height + 0.5,
- 	     0 + 0.5,
- 	     0.001,
- 	     1000
-	 );
- 
- 	 g_hudViewInfo.drawContext.view = g_math.matrix4.lookAt(
-  	    [0, 0, 1],   // eye
-  	    [0, 0, 0],   // target
-  	    [0, 1, 0]);  // up
-	 
-	 
-
-	 //Setup the materials for the HUD. Unlike the models this must be done manually
-	 //For now we have just one material. We may later have to add more.
-	 for (var ii = 0; ii < g_materialUrls.length; ++ii)
-	 {
-   		 var effect = g_pack.createObject('Effect');
-   		 o3djs.effect.loadEffect(effect, g_materialUrls[ii]);
- 
- 		   // Create a Material for the effect.
- 		   var material = g_pack.createObject('Material');
- 
- 		   // Apply our effect to this material.
- 		   material.effect = effect;
- 
- 		   // Create the params the effect needs on the material.
- 		   effect.createUniformParameters(material);
- 
-		    // Set the default params. We'll override these with params on transforms.
-			material.getParam('colorMult').value = [1, 1, 1, 1];
- 
-  			g_materials[ii] = material;
- 	 }
-	 // g_materials[0].drawList = g_hudViewInfo.zOrderedDrawList;
-	  g_materials[0].drawList = g_viewInfo.zOrderedDrawList;
-	  
-	  // Create an instance of the canvas utilities library.
-	hudCanvasLib = o3djs.canvas.create(g_pack, g_hudRoot, g_hudViewInfo);	
 	
-	var labelArrowEffect = g_pack.createObject('Effect'); 
+	//Create root transform for HUD
+	g_hudRoot = g_pack.createObject('Transform');
+	
+	// Create a second view for the hud. 
+	g_hudViewInfo = o3djs.rendergraph.createBasicView(g_pack, g_hudRoot, g_client.renderGraphRoot);
+	
+	// Make sure the hud gets drawn after the 3d stuff
+	g_hudViewInfo.root.priority = g_viewInfo.root.priority + 1;
+	
+	// Turn off clearing the color for the hud since that would erase the 3d
+	// parts but leave clearing the depth and stencil so the HUD is unaffected
+	// by anything done by the 3d parts.
+	g_hudViewInfo.clearBuffer.clearColorFlag = false;
+	
+	// Set culling to none so we can flip images using rotation or negative scale.
+	g_hudViewInfo.zOrderedState.getStateParam('CullMode').value = g_o3d.State.CULL_NONE;
+	g_hudViewInfo.zOrderedState.getStateParam('ZWriteEnable').value = false;
+	
+	// Create an orthographic matrix for 2d stuff in the HUD.
+	// We assume the area is 800 pixels by 600 pixels and therefore we can
+	// position things using a 0-799, 0-599 coordinate system. If we change the
+	// size of the client area everything will get scaled to fix but we don't
+	// have to change any of our code. See 2d.html
+	
+	g_hudViewInfo.drawContext.projection = g_math.matrix4.orthographic(0 + 0.5, g_client.width + 0.5, g_client.height + 0.5, 0 + 0.5, 0.001, 1000);
+	
+	g_hudViewInfo.drawContext.view = g_math.matrix4.lookAt([0, 0, 1], // eye
+ [0, 0, 0], // target
+ [0, 1, 0]); // up
+	//Setup the materials for the HUD. Unlike the models this must be done manually
+	//For now we have just one material. We may later have to add more.
+	for (var ii = 0; ii < g_materialUrls.length; ++ii) {
+		var effect = g_pack.createObject('Effect');
+		o3djs.effect.loadEffect(effect, g_materialUrls[ii]);
+		
+		// Create a Material for the effect.
+		var material = g_pack.createObject('Material');
+		
+		// Apply our effect to this material.
+		material.effect = effect;
+		
+		// Create the params the effect needs on the material.
+		effect.createUniformParameters(material);
+		
+		// Set the default params. We'll override these with params on transforms.
+		material.getParam('colorMult').value = [1, 1, 1, 1];
+		
+		g_materials[ii] = material;
+	}
+	// g_materials[0].drawList = g_hudViewInfo.zOrderedDrawList;
+	g_materials[0].drawList = g_viewInfo.zOrderedDrawList;
+	
+	// Create an instance of the canvas utilities library.
+	hudCanvasLib = o3djs.canvas.create(g_pack, g_hudRoot, g_hudViewInfo);
+	
+	var labelArrowEffect = g_pack.createObject('Effect');
 	o3djs.effect.loadEffect(labelArrowEffect, 'shaders/solid-color.shader');
 	
 	labelArrowMaterial = g_pack.createObject('Material');
-  	labelArrowMaterial.effect = labelArrowEffect;
+	labelArrowMaterial.effect = labelArrowEffect;
 	
-  	labelArrowEffect.createUniformParameters(labelArrowMaterial);
+	labelArrowEffect.createUniformParameters(labelArrowMaterial);
 	labelArrowMaterial.drawList = g_viewInfo.performanceDrawList;
 	
 	//Set arrow material to black
 	labelArrowMaterial.getParam('color').value = [0, 0, 0, 1];
 	
-	 // Load all the labelText textures.
-     var loader = o3djs.loader.createLoader(initStep3);
- 	 for (var ii = 0; ii < g_textureUrls.length; ++ii) {
-     loadTexture(loader, g_textureUrls[ii], ii);
-     }
-     loader.finish();	
+	// Load all the labelText textures.
+	var loader = o3djs.loader.createLoader(initStep3);
+	
+	for (var ii = 0; ii < xmlDoc.getElementsByTagName("model_name").length; ++ii) {
+	
+		for (j = 0; j < xmlDoc.getElementsByTagName("model")[ii].getElementsByTagName("label").length; j++) {
+			loadTexture(loader, "assets/bitmaps/" + xmlDoc.getElementsByTagName("model")[ii].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
+		}
+		loader.finish();
+		
+	}
 	
 }
 
@@ -397,6 +382,7 @@ function loadLabels()
 		{
 			//console.log("entering second for loop");
 			//console.log(xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
+			
 			oH_obj[i].addLabel(
 			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_name")[0].childNodes[0].nodeValue,
 			xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue,
@@ -1228,14 +1214,14 @@ Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform );
 	
 	this.label_arrows[this.num_labels].name		= name;
-	this.label_arrows[this.num_labels].bitmap	= bitmap;
+	//this.label_arrows[this.num_labels].bitmap	= bitmap;
 	this.label_arrows[this.num_labels].pos		= pos;
 	this.label_arrows[this.num_labels].normal	= norm;
 	this.label_arrows[this.num_labels].summary	= summary;
 	this.label_arrows[this.num_labels].link		= link;
 
 	//add a label
-	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform);	
+	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform,bitmap);	
 	
 	//increase the label count
 	this.num_labels++;
@@ -1437,23 +1423,29 @@ LabelArrow.prototype.hideArrow() =function(){
 
 */
 
-function Label( /*imageTexture,*/position, attachTo){
+function Label( position, attachTo, bitmap){
 	
 	
 	this.position	 = position;
 	this.attachTo	 = attachTo;
 	this.labelHolder = g_pack.createObject('Transform');
 	this.labelHolder.parent = this.attachTo;
+	this.bitmap		 = "assets/bitmaps/" + bitmap;
 	
 	this.labelHolder.translate(position);
 	
-	if(g_textures[0])
-	this.image = new Image(g_textures[0],false,this.labelHolder,"trial");
-	else
-	alert("No texture");
+	
 	
 	this.currNor = null;
+	this.texture = g_textures[this.bitmap];
+	 
+	 if(this.texture)
+	 this.image = new Image(this.texture,false,this.labelHolder,this.bitmap);
+	 else
+	 alert("No texture");
+	
 }
+
 
 /**
  *  Encapsulation of an image
@@ -1542,6 +1534,11 @@ Image.prototype.setColor = function(r, g, b, a) {
 
 
 
+
+
+
+
+
 /**
  * Loads a texture and saves it in the g_textures array.
  * @param {Object} loader The loader to load with.
@@ -1549,14 +1546,18 @@ Image.prototype.setColor = function(r, g, b, a) {
  * @param {number} index Index to put texture in g_textures
  * 
  */
-function loadTexture(loader, url, index) {
-  loader.loadTexture(g_pack, url, function(texture, exception) {
+function loadTexture(loader, filename) {
+  loader.loadTexture(g_pack,
+                     o3djs.util.getAbsoluteURI( filename),
+                     rememberTexture);
+
+  function rememberTexture(texture, exception) {
     if (exception) {
       alert(exception);
     } else {
-      g_textures[index] = texture; 
+    g_textures[filename] = texture;
     }
-  });
+  }
 }
 
 
