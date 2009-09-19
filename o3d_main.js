@@ -1467,8 +1467,11 @@ function Image(texture, opt_topLeft,attachTo,name) {
   this.scaleTransform.name = name;
   
   // setup the sampler for the texture
-  
-  var sampler = billboardMaterial.getParam('texSampler0').value;
+  this.material = o3djs.material.createMaterialFromFile( g_pack, 
+															   'shaders/billboard.shader', 
+															   g_viewInfo.zOrderedDrawList
+														);
+  var sampler = this.material.getParam('texSampler0').value;
   sampler.texture = texture;
   sampler.addressModeU = g_o3d.Sampler.CLAMP;
   sampler.addressModeV = g_o3d.Sampler.CLAMP;
@@ -1492,7 +1495,7 @@ function Image(texture, opt_topLeft,attachTo,name) {
   // all our manipluations in XZ but most people seem to like XY for 2D.
   	this.plane = o3djs.primitives.createPlane(
   					    g_pack,
-   					    billboardMaterial,
+   					    this.material,
 					 	0.5,
    					    0.5,
    					    1,
