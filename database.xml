@@ -202,7 +202,7 @@
 		<model_name>corpus callosum</model_name>
 		<asset>corpuscallosum.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with></draw_with>
+		<draw_with>none</draw_with>
 		<label>
 			<label_name>corpus callosum</label_name>
 			<label_bitmap>corpus_callosum.png</label_bitmap>
@@ -223,7 +223,7 @@
 		<model_name>thalamus</model_name>
 		<asset>thalamus.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with></draw_with>
+		<draw_with>none</draw_with>
 		<label>
 			<label_name>thalamus</label_name>
 			<label_bitmap>thalamus.png</label_bitmap>

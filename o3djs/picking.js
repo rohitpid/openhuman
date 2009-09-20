@@ -376,6 +376,7 @@ o3djs.picking.ShapeInfo.prototype.dump = function(prefix) {
  *     transform. Can be null.
  */
 o3djs.picking.TransformInfo = function(transform, parent) {
+	
   this.childTransformInfos = {};  // Object of TransformInfo by id
   this.shapeInfos = {};  // Object of ShapeInfo by id
   /**
@@ -408,16 +409,19 @@ o3djs.picking.TransformInfo.prototype.update = function() {
   var newShapeInfos = {};
   var children = this.transform.children;
   for (var c = 0; c < children.length; c++) {
-    var child = children[c];
-    var transformInfo = this.childTransformInfos[child.clientId];
-    if (!transformInfo) {
-      transformInfo = o3djs.picking.createTransformInfo(child, this);
-    } else {
-      // clear the boundingBox so we'll regenerate it.
-      transformInfo.boundingBox = null;
-    }
-    transformInfo.update();
-    newChildTransformInfos[child.clientId] = transformInfo;
+  	var child = children[c];
+	if (child.name.substr(0,6) != 'unpck_') {
+		var transformInfo = this.childTransformInfos[child.clientId];
+		if (!transformInfo) {
+			transformInfo = o3djs.picking.createTransformInfo(child, this);
+		}
+		else {
+			// clear the boundingBox so we'll regenerate it.
+			transformInfo.boundingBox = null;
+		}
+		transformInfo.update();
+		newChildTransformInfos[child.clientId] = transformInfo;
+	}
   }
   var shapes = this.transform.shapes;
   for (var s = 0; s < shapes.length; s++) {

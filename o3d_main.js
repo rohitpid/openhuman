@@ -120,6 +120,8 @@ var billboardMaterial;
 var g_globalParams;
 var tempTex;
 
+var LABEL_SIZE_FACTOR = 1;
+
 /**
  * Creates the client area.
  */
@@ -286,6 +288,7 @@ function initStep2(clientElements){
 	
 		for (j = 0; j < xmlDoc.getElementsByTagName("model")[ii].getElementsByTagName("label").length; j++) {
 			loadTexture(loader, "assets/bitmaps/" + xmlDoc.getElementsByTagName("model")[ii].getElementsByTagName("label")[j].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
+												
 		}
 		loader.finish();
 		
@@ -297,7 +300,7 @@ function initStep3(){
 
 	/*
 	//REMOVE THIS IF WE CAN DO AWAY WITH THE LOADER CODE
-	oH_Logo = new Image(g_textures[0], true,g_client.root,"logo");
+	oH_Logo = new LabelImage(g_textures[0], true,g_client.root,"logo");
 	*/
 	
 	//Now that everything is setup, load all the models
@@ -313,7 +316,15 @@ function initStep3(){
 	//Then all the labels
 	loadLabels();
 	
+	//hide(oH_obj[0]);
 	updateHUDInfo();
+	
+	//Now we do selective label hiding
+	//Initially only the head and eye ought to be visible
+	//show(oH_obj[i]);
+	
+	//alert('Pause');
+	//updateVisibility(oH_obj[0],false);
 
 }	
 
@@ -376,6 +387,12 @@ function loadLabels()
 	//console.log(xmlDoc.getElementsByTagName("model")[0].getElementsByTagName("label")[0].getElementsByTagName("label_bitmap")[0].childNodes[0].nodeValue);
 	for(i=0;i<xmlDoc.getElementsByTagName("model_name").length;i++)
 	{
+		
+		oH_obj[i].insideOf = xmlDoc.getElementsByTagName("insideof")[i].childNodes[0].nodeValue;
+		oH_obj[i].drawWith = xmlDoc.getElementsByTagName("draw_with")[i].childNodes[0].nodeValue;
+		
+		//alert(oH_obj[i].transform.name +" is InsideOf " + oH_obj[i].insideOf + " drawn with " + oH_obj[i].drawWith);
+		
 		//console.log("entering first for");
 		//console.log(xmlDoc.getElementsByTagName("model_name")[i].getElementsByTagName("label")[0].childNodes[0].nodeValue);
 		for(j=0;j<xmlDoc.getElementsByTagName("model")[i].getElementsByTagName("label").length;j++)
@@ -574,7 +591,7 @@ function updateHUDInfo()
 	{
 		g_hud_treeInfo = o3djs.picking.createTransformInfo(g_hudRoot,null);
 	}
-	g_hud_treeInfo.update();
+	
 }
 
 
@@ -917,8 +934,8 @@ function pick(e)
 	g_treeInfo.update();
  
 	var pickInfo = g_treeInfo.pick(worldRay);
-	
-	if (pickInfo) 
+		
+	if ( pickInfo && pickInfo.shapeInfo.parent.transform.name.substr(0,6) != 'unpck_' ) 
 	{
 
 		g_selectedInfo = pickInfo;
@@ -1089,6 +1106,31 @@ function setupHighlightMeshMaterial(g_selectedMesh)
 	
 }
 
+function setupVisibilityTree()
+{
+	
+	// Actually the only thing left to enable Visibility Tree Traversal is the array of objects within each model
+	// that contains the list of models it encompasses/encloses/contains.
+	
+	for(var i=0;i<oH_obj.length;i++)
+		for(var j=0;j<oH_obj.length;j++){
+			
+				if( oH_obj[i].insideOf != 'none'	)
+				{
+					//This object is inside another
+					
+					if(oH_obj[j].transform.name == oH_obj[i].insideOf)
+					{
+						//Then this oH_obj[j] contains oH_obj[i]
+						//Thus add the latter to the former's 'contains' array
+						oH_obj[j].contains[oH_obj[j].contains] = oH_obj[i];
+						
+					}
+				}
+			
+		}
+}
+
 function highlightMeshMaterial()
 {
 	
@@ -1116,37 +1158,83 @@ function restoreMeshMaterial()
 }
 
 
-function hide()
+function hide(model)
 {
-	// Add it to the same transform
-	if(g_selectedInfo)
+	/* 
+	 * This function accepts an optional model argument which it hides if it is passed.
+	 * This happens when updateVisibility() needs some model hidden.
+	 * If this argument is not passed, it probes the g_selectedinfo object resulting 
+	 * from the picking to hide the clicked model as necessary and then invokes updateVisibility().
+	 * Thus the entire hierarchy of models recursively get hidden or shown based on what each model is insideOf
+	 * or drawnWith.
+	 */
+	
+	
+	if (model) 
 	{
-		//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
-		//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
-		for( var i=0; i<oH_numObj; i++ ){
-			//medulla oblongata is mispelled in the blend file so the object name is wrong and it can never be hidden. Need to set names from XML.
-			//console.log("Pick "+g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+" Obj "+oH_obj[i].transform.name.replace(/ /,""));
-			if(g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /,""))
-			{
-				oH_obj[i].transform.translate(100,100,100);
-				g_loadingElement.innerHTML = oH_obj[i].transform.name+" hidden";
-				removedObjects.push(oH_obj[i].transform);
-			}
+		if (model.visible) {
+		//	if(model.transform.name=="head")
+		//	alert("head moved");
+			model.transform.translate(100, 100, 100);
+			model.visible = false;
+		}
+		//irrespective of whether the object was previously visible, update the visibility tree	
+		updateVisibility(model, true);
+	   
+	}
+	else {
+		// Add it to the same transform
+		if (g_selectedInfo) {
+			//For some reason g_selectedInfo.shapeInfo.parent.transform does not refer to the transform holding mesh
+			//Yet it translates the mesh. TODO: Need to figure out where in the hierarchy this transform occurs
+			for (var i = 0; i < oH_numObj; i++) {
+				//medulla oblongata is mispelled in the blend file so the object name is wrong and it can never be hidden. Need to set names from XML.
+				//console.log("Pick "+g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+" Obj "+oH_obj[i].transform.name.replace(/ /,""));
+				if (g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /, "")) {
+					oH_obj[i].transform.translate(100, 100, 100);
+					g_loadingElement.innerHTML = oH_obj[i].transform.name + " hidden";
+					removedObjects.push(oH_obj[i].transform);
+					oH_obj[i].visible = false;
+					updateVisibility(oH_obj[i], true);
+				}
+			}			
 		}
 		
+		//Remove the rayinfo after the hide so that it doesnt muck up things later
+		g_selectedInfo = null;
 	}
-	
-	//Remove the rayinfo after the hide so that it doesnt muck up things later
-	g_selectedInfo = null;
 }
 
-function show()
+function show(model)
 {
-	if(removedObjects.length > 0)
-	{
-		var obj = removedObjects.pop();
-		obj.translate(-100,-100,-100);
-		g_loadingElement.innerHTML = obj.name+" shown";
+	/* 
+	 * This function (like hide) accepts an optional model argument which it hides if it is passed.
+	 * This happens when updateVisibility() needs some model un-hidden.
+	 * If this argument is not passed, it probes the g_selectedinfo object resulting 
+	 * from the picking to unhide the last hidden model from stack and then invokes updateVisibility().
+	 * Thus the entire hierarchy of models recursively get hidden or shown based on what each model is insideOf
+	 * or drawnWith.
+	 */
+	if (model) {
+		if (!model.visible) {
+			
+			//	if(model.transform.name=="head")
+		   //	alert("head moved");
+			
+			model.transform.translate(-100, -100, -100);
+			model.visible = true;
+		}
+		//irrespective of whether the object was previously visible, update the visibility tree		
+		updateVisibility(model, false);
+	
+	}
+	else {
+		if (removedObjects.length > 0) {
+			var obj = removedObjects.pop();
+			obj.translate(-100, -100, -100);
+			getParentModel(obj).visible = true;
+			g_loadingElement.innerHTML = obj.name + " shown";
+		}
 	}
 }
 
@@ -1159,8 +1247,11 @@ function hideall()
 
 	for (var i = 0; i<oH_obj.length;i++)
 	{
+		
 		oH_obj[i].transform.translate(100,100,100);
+		oH_obj[i].visible = false;
 		removedObjects.push(oH_obj[i].transform);
+		
 	}
 	g_loadingElement.innerHTML = "All objects hidden";
 }
@@ -1173,10 +1264,73 @@ function showall()
 		{
 			var obj=removedObjects.pop();
 			obj.translate(-100,-100,-100);
+			getParentModel(obj).visible = true;
 			
 		}
 		g_loadingElement.innerHTML = "All objects shown";
 	}
+	
+}
+
+function updateVisibility(model,hidden)
+{
+	
+	/*
+	 * This function recursively traverses the visibility tree based on the insideOf and drawnWith attributes of all the models
+	 * and updates the visibility of the children of the argument 'model' based on the following logic:
+	 * 
+	 *  			If 'model's' parent was hidden, and this function called with hidden set to false then clearly children stay hidden too, 
+	 *  			since this object is visible and thus hides its children. 
+	 *  
+	 *  			If however the function is called with the hidden boolean set to true (i.e model is itself to be hidden) AND 'model's' 
+	 *  			parent's visibility also hidden, then the children have to be unhidden, since now they are visible. 
+	 *  
+	 *  			Finally, if the parent is to be made visible, then both this model and the children must be hidden irrespective of the boolean.
+	 * 
+	 * 	The exception to the above rule ofcourse will be in the case of 'drawnWith' models. 
+	 * 
+	 */
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
+	alert(model.transform.name + " initiated a visibility update");
+	for (var i = 0; i < oH_obj.length; i++)
+	{
+			
+			//Check to see if this object is inside the hidden or unhidden model
+			
+			if(oH_obj[i].insideOf == model.transform.name )
+			{
+				//alert(oH_obj[i].transform.name + " was found to be inside " + model.transform.name);
+				
+				if(hidden)	//surrounding model was just hidden
+				{
+					// Ensure the object is not already visible
+					if (oH_obj[i].visible == false) {
+						//unhide this sub-model which is inside 'model'
+						show(oH_obj[i]);
+					}
+					
+				}
+				else	//surrounding model was just unhidden
+				{
+					// Ensure the object is not already hidden
+					if (oH_obj[i].visible ==true) {
+						alert('Hiding '+oH_obj[i].transform.name+" as it is inside " +model.transform.name + " which was just revealed" );
+						//unhide this sub-model which is inside 'model'
+						hide(oH_obj[i]);
+					}
+				}
+			}
+	}
+	*/
+	
 	
 }
 
@@ -1197,20 +1351,35 @@ function resetView()
 	showall();
 }
 
+function getParentModel(transform)
+{
+	// A function that iterates through the object list and returns the model
+	// that this transform was attached to
+	for(var i=0; i<oH_obj.length;i++)
+	{
+		if(transform.name == oH_obj[i].transform.name)
+		return oH_obj[i];
+	}
+}
+
+
 function Model(o3d_trans)
 {
-	this.transform = o3d_trans;
-	this.name	   = null;
+	this.transform 		   = o3d_trans;
+	this.name	   			   = null;
 	this.label_arrows	   = new Array();
 	this.labels			   = new Array();
-	this.num_labels = 0;
-	
+	this.num_labels 	   = 0;
+	this.insideOf 		   = null;
+	this.drawWith 		   = null;
+	this.contains   = new Array();
+	this.visible  			   = true;
 	
 }
 
 Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 {
-	//add a label arrow first
+	///add a label arrow first
 	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform );
 
 	//add a label
@@ -1440,7 +1609,7 @@ function Label( position, attachTo, bitmap){
 	this.texture = g_textures[this.bitmap];
 	 
 	 if(this.texture)
-	 this.image = new Image(this.texture,false,this.labelHolder,this.bitmap);
+	 this.image = new LabelImage(this.texture,false,this.labelHolder,this.bitmap);
 	 else
 	 alert("No texture");
 	
@@ -1454,17 +1623,28 @@ function Label( position, attachTo, bitmap){
  * @param {Object} attachTo Parent Transform to attach this image to
  * 
  */
-function Image(texture, opt_topLeft,attachTo,name) {
+function LabelImage(texture, opt_topLeft,attachTo,name) {
+
+      
+   	var baseWidth  = 0.6; //Corresponds to the width with which the 'head' label appears most pleasing (arguably)
+   	var baseHeight = 0.3; 
+		
 	
+	var strWidthFactor = baseWidth*texture.width/g_textures["assets/bitmaps/head.png"].width;
+	
+			
   // create a transform for positioning
   this.transform = g_pack.createObject('Transform');
   this.transform.parent = attachTo;
+  this.transform.name = "unpck_" + name;
+
  
   // create a transform for scaling to the size of the image just so
   // we don't have to manage that manually in the transform above.
   this.scaleTransform = g_pack.createObject('Transform');
   this.scaleTransform.parent = this.transform;
-  this.scaleTransform.name = name;
+  this.scaleTransform.name = "unpck_" + name;
+
   
   // setup the sampler for the texture
   this.material = o3djs.material.createMaterialFromFile( g_pack, 
@@ -1473,9 +1653,13 @@ function Image(texture, opt_topLeft,attachTo,name) {
 														);
   var sampler = this.material.getParam('texSampler0').value;
   sampler.texture = texture;
-  sampler.addressModeU = g_o3d.Sampler.CLAMP;
-  sampler.addressModeV = g_o3d.Sampler.CLAMP;
-
+  sampler.addressModeU = g_o3d.Sampler.BORDER;
+  sampler.addressModeV = g_o3d.Sampler.BORDER;
+  sampler.borderColor = [1, 0, 0, 1];
+  sampler.minFilter			= g_o3d.Sampler.ANISOTROPIC;
+  sampler.maxAnisotropy = 4;
+  sampler.magFilter			= g_o3d.Sampler.LINEAR;
+  sampler.mipFilter			= g_o3d.Sampler.LINEAR;
  /*
   // Setup our UV offsets and color multiplier
   this.paramColorMult = this.scaleTransform.createParam('colorMult','ParamFloat4');
@@ -1496,9 +1680,9 @@ function Image(texture, opt_topLeft,attachTo,name) {
   	this.plane = o3djs.primitives.createPlane(
   					    g_pack,
    					    this.material,
-					 	0.5,
-   					    0.5,
-   					    1,
+					 	baseWidth*strWidthFactor*LABEL_SIZE_FACTOR,
+   					    baseHeight,						
+					    1,
    					    1,
 						g_math.matrix4.rotationX( g_math.degToRad(90) )
 						);
@@ -1531,16 +1715,9 @@ function Image(texture, opt_topLeft,attachTo,name) {
  * @param {number} b Blue component.
  * @param {number} a Alpha component.
  */
-Image.prototype.setColor = function(r, g, b, a) {
+LabelImage.prototype.setColor = function(r, g, b, a) {
   this.paramColorMult.set(r, g, b, a);
 };
-
-
-
-
-
-
-
 
 /**
  * Loads a texture and saves it in the g_textures array.
@@ -1562,68 +1739,6 @@ function loadTexture(loader, filename) {
     }
   }
 }
-
-
-
-
-/*
-function Label(canvas,text,posX,posY,width,height,bgColor,bgimage)
-{
-	//Text in Dialog
-	//Defaults to null text so that we can use the same dialog object to display just pictures
-	this.text = text || "";
-	
-	this.posX  	 = posX || 0;
-	this.posY 	 	=  posY || 0;
-	
-	this.width   =  width || 400;
-	this.height  = height || 300;
-	
-	this.bgColor = bgColor	||	[0.847, 0.847, 0.847, 0.5];
-	this.canvas	 = canvas;
-	
-	
-	// Create a canvas surface to draw on.
-  	this.canvasQuad = this.canvas.createXYQuad( 
-	 										   this.posX,
-	 										   this.posY, 
-											   -1, 
-											   this.width, 
-											   this.height, 
-											   true, 
-											   g_hudRoot
-											  );
- 
- 	 this.canvasQuad.canvas.clear(this.bgColor);
- 	 	 
- 	 this.backgroundPaint = g_pack.createObject('CanvasPaint');
- 	 this.backgroundPaint.color = [1, 0.94, 0.94, 0.5];
- 	 
- 	 this.textPaint = g_pack.createObject('CanvasPaint');
-	 var finColor 	= [0,0,0,1];
-	 
-
-	 this.textPaint.color = [0,0,0,1];
- 	 this.textPaint.textSize = 12;
-     this.textPaint.textTypeface = 'Arial';
- 	
-    var lineDimensions = this.textPaint.measureText('Arial');
- 	
-	this.canvasQuad.canvas.drawRect(lineDimensions[0],
-                                 	lineDimensions[1],
-                                 	lineDimensions[2],
-                                	lineDimensions[3],
-                               		this.backgroundPaint);
-    
- 	this.canvasQuad.canvas.drawText(this.text,
-                              		 20,
-                              		 20,
-                              		 this.textPaint);
-	 this.canvasQuad.updateTexture();
-}
-*/
-
-
 
 /*
 *	The following RGB-HSV code is courtesy of Matt Haynes
