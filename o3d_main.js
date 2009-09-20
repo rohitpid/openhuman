@@ -1212,16 +1212,16 @@ Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 {
 	//add a label arrow first
 	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform );
-	
-	this.label_arrows[this.num_labels].name		= name;
-	//this.label_arrows[this.num_labels].bitmap	= bitmap;
-	this.label_arrows[this.num_labels].pos		= pos;
-	this.label_arrows[this.num_labels].normal	= norm;
-	this.label_arrows[this.num_labels].summary	= summary;
-	this.label_arrows[this.num_labels].link		= link;
 
 	//add a label
-	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform,bitmap);	
+	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform,bitmap);
+	
+	this.labels[this.num_labels].name		= name;
+	//this.label_arrows[this.num_labels].bitmap	= bitmap;
+	this.labels[this.num_labels].pos		= pos;
+	this.labels[this.num_labels].normal	= norm;
+	this.labels[this.num_labels].summary	= summary;
+	this.labels[this.num_labels].link		= link;	
 	
 	//increase the label count
 	this.num_labels++;
