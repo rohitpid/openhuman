@@ -120,6 +120,8 @@ var billboardMaterial;
 var g_globalParams;
 var tempTex;
 
+var oH_obj_named_array = [];
+
 var LABEL_SIZE_FACTOR = 1;
 
 /**
@@ -322,9 +324,12 @@ function initStep3(){
 	//Now we do selective label hiding
 	//Initially only the head and eye ought to be visible
 	//show(oH_obj[i]);
+	setupVisibilityTree();
 	
-	//alert('Pause');
-	//updateVisibility(oH_obj[0],false);
+	alert('Pause');
+	hideall();
+	revealModel(oH_obj[0]);
+	
 
 }	
 
@@ -375,6 +380,10 @@ function loadModels(reload)
 	{	
 		oH_obj[oH_numObj] = new Model( loadFile( g_viewInfo.drawContext, oH_ASSET_PATH + oH_OBJECTS_LIST[i] ) );
 		oH_obj[oH_numObj].transform.name = oH_OBJECTS_NAMES[i];		
+		
+		//Also store the objects in a named array for easier lookup by name later using getModelByName() function
+		oH_obj_named_array[oH_obj[oH_numObj].transform.name] = oH_obj[oH_numObj];
+		
 		oH_numObj++;
 		
 	}
@@ -1113,21 +1122,17 @@ function setupVisibilityTree()
 	// that contains the list of models it encompasses/encloses/contains.
 	
 	for(var i=0;i<oH_obj.length;i++)
-		for(var j=0;j<oH_obj.length;j++){
+		if( oH_obj[i].insideOf != 'none'	)
+		{
 			
-				if( oH_obj[i].insideOf != 'none'	)
-				{
-					//This object is inside another
-					
-					if(oH_obj[j].transform.name == oH_obj[i].insideOf)
-					{
-						//Then this oH_obj[j] contains oH_obj[i]
-						//Thus add the latter to the former's 'contains' array
-						oH_obj[j].contains[oH_obj[j].contains] = oH_obj[i];
+			//Then this oH_obj[j] contains oH_obj[i]
+			//Thus add the latter to the former's 'contains' array
+			var container = getModelByName(oH_obj[i].insideOf);
+			container.contains[container.contains.length] = oH_obj[i];
+			
+			//Also setup the within attribute of this model
+			oH_obj[i].within = container;
 						
-					}
-				}
-			
 		}
 }
 
@@ -1143,7 +1148,6 @@ function highlightMeshMaterial()
 	}
 
 }
-
 
 function restoreMeshMaterial()
 {	
@@ -1162,25 +1166,15 @@ function hide(model)
 {
 	/* 
 	 * This function accepts an optional model argument which it hides if it is passed.
-	 * This happens when updateVisibility() needs some model hidden.
-	 * If this argument is not passed, it probes the g_selectedinfo object resulting 
-	 * from the picking to hide the clicked model as necessary and then invokes updateVisibility().
-	 * Thus the entire hierarchy of models recursively get hidden or shown based on what each model is insideOf
-	 * or drawnWith.
-	 */
+	*/
 	
 	
 	if (model) 
 	{
-		if (model.visible) {
-		//	if(model.transform.name=="head")
-		//	alert("head moved");
-			model.transform.translate(100, 100, 100);
-			model.visible = false;
-		}
-		//irrespective of whether the object was previously visible, update the visibility tree	
-		updateVisibility(model, true);
-	   
+			if (model.visible) {
+				model.transform.translate(100, 100, 100);
+				model.visible = false;
+			}
 	}
 	else {
 		// Add it to the same transform
@@ -1191,11 +1185,9 @@ function hide(model)
 				//medulla oblongata is mispelled in the blend file so the object name is wrong and it can never be hidden. Need to set names from XML.
 				//console.log("Pick "+g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase()+" Obj "+oH_obj[i].transform.name.replace(/ /,""));
 				if (g_selectedInfo.shapeInfo.parent.transform.name.toLowerCase() == oH_obj[i].transform.name.replace(/ /, "")) {
-					oH_obj[i].transform.translate(100, 100, 100);
-					g_loadingElement.innerHTML = oH_obj[i].transform.name + " hidden";
-					removedObjects.push(oH_obj[i].transform);
-					oH_obj[i].visible = false;
-					updateVisibility(oH_obj[i], true);
+					occludeModel(oH_obj[i]);
+					g_loadingElement.innerHTML = oH_obj[i].transform.name + " hidden";					
+					removedObjects.push(oH_obj[i].transform);					
 				}
 			}			
 		}
@@ -1209,30 +1201,19 @@ function show(model)
 {
 	/* 
 	 * This function (like hide) accepts an optional model argument which it hides if it is passed.
-	 * This happens when updateVisibility() needs some model un-hidden.
-	 * If this argument is not passed, it probes the g_selectedinfo object resulting 
-	 * from the picking to unhide the last hidden model from stack and then invokes updateVisibility().
-	 * Thus the entire hierarchy of models recursively get hidden or shown based on what each model is insideOf
-	 * or drawnWith.
 	 */
 	if (model) {
-		if (!model.visible) {
 			
-			//	if(model.transform.name=="head")
-		   //	alert("head moved");
-			
-			model.transform.translate(-100, -100, -100);
-			model.visible = true;
-		}
-		//irrespective of whether the object was previously visible, update the visibility tree		
-		updateVisibility(model, false);
+			if (!model.visible) {
+				model.transform.translate(-100, -100, -100);
+				model.visible = true;
+			}
 	
 	}
 	else {
 		if (removedObjects.length > 0) {
 			var obj = removedObjects.pop();
-			obj.translate(-100, -100, -100);
-			getParentModel(obj).visible = true;
+			revealModel(getParentModel(obj));
 			g_loadingElement.innerHTML = obj.name + " shown";
 		}
 	}
@@ -1247,11 +1228,10 @@ function hideall()
 
 	for (var i = 0; i<oH_obj.length;i++)
 	{
-		
-		oH_obj[i].transform.translate(100,100,100);
-		oH_obj[i].visible = false;
-		removedObjects.push(oH_obj[i].transform);
-		
+		if (oH_obj[i].visible) {
+			occludeModel(oH_obj[i]);
+			removedObjects.push(oH_obj[i].transform);
+		}
 	}
 	g_loadingElement.innerHTML = "All objects hidden";
 }
@@ -1262,75 +1242,72 @@ function showall()
 	{
 		for(i=0;removedObjects.length !=0;)
 		{
-			var obj=removedObjects.pop();
-			obj.translate(-100,-100,-100);
-			getParentModel(obj).visible = true;
-			
-		}
+			var obj=getParentModel(removedObjects.pop());		
+		}		
 		g_loadingElement.innerHTML = "All objects shown";
+	}
+	
+	//We want to reveal only the models that are outermost
+	// i.e. not inside any other
+	for (var i = 0; i<oH_obj.length;i++)
+	{		
+		if (oH_obj[i].insideOf=='none') {
+			revealModel(oH_obj[i]);
+		}
 	}
 	
 }
 
-function updateVisibility(model,hidden)
+function hideSubModels(model)
 {
+	//This function marches down the tree recursively starting from model and hides all its children
 	
-	/*
-	 * This function recursively traverses the visibility tree based on the insideOf and drawnWith attributes of all the models
-	 * and updates the visibility of the children of the argument 'model' based on the following logic:
-	 * 
-	 *  			If 'model's' parent was hidden, and this function called with hidden set to false then clearly children stay hidden too, 
-	 *  			since this object is visible and thus hides its children. 
-	 *  
-	 *  			If however the function is called with the hidden boolean set to true (i.e model is itself to be hidden) AND 'model's' 
-	 *  			parent's visibility also hidden, then the children have to be unhidden, since now they are visible. 
-	 *  
-	 *  			Finally, if the parent is to be made visible, then both this model and the children must be hidden irrespective of the boolean.
-	 * 
-	 * 	The exception to the above rule ofcourse will be in the case of 'drawnWith' models. 
-	 * 
-	 */
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	alert(model.transform.name + " initiated a visibility update");
-	for (var i = 0; i < oH_obj.length; i++)
+	for(var i=0; i<model.contains.length;i++)
 	{
-			
-			//Check to see if this object is inside the hidden or unhidden model
-			
-			if(oH_obj[i].insideOf == model.transform.name )
-			{
-				//alert(oH_obj[i].transform.name + " was found to be inside " + model.transform.name);
-				
-				if(hidden)	//surrounding model was just hidden
-				{
-					// Ensure the object is not already visible
-					if (oH_obj[i].visible == false) {
-						//unhide this sub-model which is inside 'model'
-						show(oH_obj[i]);
-					}
-					
-				}
-				else	//surrounding model was just unhidden
-				{
-					// Ensure the object is not already hidden
-					if (oH_obj[i].visible ==true) {
-						alert('Hiding '+oH_obj[i].transform.name+" as it is inside " +model.transform.name + " which was just revealed" );
-						//unhide this sub-model which is inside 'model'
-						hide(oH_obj[i]);
-					}
-				}
-			}
+		var subModel = model.contains[i];
+	//	alert(subModel.transform.name + ' inside ' + model.transform.name);
+		
+	//	alert('hiding ' + subModel.transform.name );
+		hide(subModel);
+		
+		//If child has some submodels within itself. hide those too
+		if(subModel.contains.length >0 )
+		hideSubModels(subModel);
 	}
-	*/
 	
+}
+
+function occludeModel(model)
+{
+	//alert(model.transform.name + ' hidden');
+	//Hide this model 
+	hide(model);
+	
+	//but reveal all its immediate children
+	for (var i = 0; i < model.contains.length; i++) {
+	
+		var subModel = model.contains[i];
+	//	alert(subModel.transform.name + ' inside ' + model.transform.name);
+		
+		//alert('showing ' + subModel.transform.name );
+		show(subModel);
+		
+		//Hide all the submodels of the children though
+		if( subModel.contains.length>0 )
+		hideSubModels(subModel);
+	}
+	
+}
+
+function revealModel(model)
+{
+	//Show this model 
+	
+	show(model);
+	//alert(model.transform.name + ' revealed');
+	
+	//and hide all models it contains
+	hideSubModels(model);
 	
 }
 
@@ -1362,6 +1339,10 @@ function getParentModel(transform)
 	}
 }
 
+function getModelByName(name)
+{
+	return oH_obj_named_array[name];
+}
 
 function Model(o3d_trans)
 {
@@ -1370,7 +1351,8 @@ function Model(o3d_trans)
 	this.label_arrows	   = new Array();
 	this.labels			   = new Array();
 	this.num_labels 	   = 0;
-	this.insideOf 		   = null;
+	this.insideOf 		   = null;				//NOTE: that this is only a string parsed from the XML. To get hold of the object within which this
+															// model lies, use the within attribute.	
 	this.drawWith 		   = null;
 	this.contains   = new Array();
 	this.visible  			   = true;
