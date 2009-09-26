@@ -326,7 +326,7 @@ function initStep3(){
 	//show(oH_obj[i]);
 	setupVisibilityTree();
 	
-	alert('Pause');
+	//alert('Pause');
 	hideall();
 	revealModel(oH_obj[0]);
 	
