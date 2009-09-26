@@ -24,12 +24,12 @@
 .fg-button-icon-right .ui-icon { left: auto; right: 0.2em; margin-left: 0; }
 button.fg-button .ui-icon{ left: -1.2em;}
 
-/*.fg-buttonset { float:left;}
-.fg-buttonset .fg-button { float: left; }*/
+.fg-buttonset { float:left; margin-top:50px;}
+.fg-buttonset .fg-button { float: left; margin-bottom:10px; width:150px;}
 
-.fg-toolbar { padding: 0.3em; margin: 0; width:100%; height: 30px; align:center;}
+.fg-toolbar { padding: 0.3em; width:100%; height: 100%;}
 .fg-toolbar .fg-buttonset { margin-left: auto; margin-right:auto; padding-left: 1px; }
-.fg-toolbar .fg-button { font-size: 0.95em; }
+.fg-toolbar .fg-button { font-size: 1.3em; }
 
 #information { width: 270px; padding: 0.4em; position: relative; /*background: #4C4C4C;*/}
 #information h3 { margin: 0; padding: 0.4em; text-align: center; }
@@ -243,7 +243,7 @@ span.invisible
 #leftnav
 {
 	float: left;
-	width: 100px;
+	width: 160px;
 	height: 70%;
 /*	margin: 0 auto; */
 /*	padding: 16px;*/
@@ -273,7 +273,6 @@ span.invisible
 	width: auto;
 	margin-left: 15%;
 	margin-right: 15%;
-	font-size: 14pt;
 	color:black;
 /*	width: 40%;
 	border-left: 1px solid gray;
