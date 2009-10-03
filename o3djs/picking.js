@@ -410,7 +410,7 @@ o3djs.picking.TransformInfo.prototype.update = function() {
   var children = this.transform.children;
   for (var c = 0; c < children.length; c++) {
   	var child = children[c];
-	if (child.name.substr(0,6) != 'unpck_') {
+	if (child.name.substr(0,6) != 'unpck_' && child.visible) {
 		var transformInfo = this.childTransformInfos[child.clientId];
 		if (!transformInfo) {
 			transformInfo = o3djs.picking.createTransformInfo(child, this);

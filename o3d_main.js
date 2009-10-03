@@ -326,9 +326,12 @@ function initStep3(){
 	//show(oH_obj[i]);
 	setupVisibilityTree();
 	
-	alert('Pause');
+	//alert('Pause');
+	
+	//We hideall and showall for the occlusion code to hide all internal models
 	hideall();
-	revealModel(oH_obj[0]);
+	showall();
+	//revealModel(oH_obj[0]);
 	
 
 }	
@@ -1121,19 +1124,27 @@ function setupVisibilityTree()
 	// Actually the only thing left to enable Visibility Tree Traversal is the array of objects within each model
 	// that contains the list of models it encompasses/encloses/contains.
 	
-	for(var i=0;i<oH_obj.length;i++)
-		if( oH_obj[i].insideOf != 'none'	)
-		{
-			
-			//Then this oH_obj[j] contains oH_obj[i]
-			//Thus add the latter to the former's 'contains' array
+	for (var i = 0; i < oH_obj.length; i++) {
+		if (oH_obj[i].insideOf != 'none') {
+		
+			//Then this oH_obj[j] contains some other model
 			var container = getModelByName(oH_obj[i].insideOf);
 			container.contains[container.contains.length] = oH_obj[i];
 			
 			//Also setup the within attribute of this model
 			oH_obj[i].within = container;
-						
+			
 		}
+		if (oH_obj[i].drawWith != 'none') {
+			
+			//Then this oH_obj[j] is drawn with another
+			// Thus we add it to the list of 
+			var model = getModelByName(oH_obj[i].drawWith);
+			model.siblings[model.siblings.length] = oH_obj[i];
+					
+		}	
+	}	
+		
 }
 
 function highlightMeshMaterial()
@@ -1166,13 +1177,13 @@ function hide(model)
 {
 	/* 
 	 * This function accepts an optional model argument which it hides if it is passed.
-	*/
-	
-	
+	*/	
 	if (model) 
 	{
 			if (model.visible) {
-				model.transform.translate(100, 100, 100);
+				//model.transform.translate(100, 100, 100);
+				model.transform.visible = false;
+				updateInfo();
 				model.visible = false;
 			}
 	}
@@ -1190,8 +1201,7 @@ function hide(model)
 					removedObjects.push(oH_obj[i].transform);					
 				}
 			}			
-		}
-		
+		}		
 		//Remove the rayinfo after the hide so that it doesnt muck up things later
 		g_selectedInfo = null;
 	}
@@ -1205,7 +1215,9 @@ function show(model)
 	if (model) {
 			
 			if (!model.visible) {
-				model.transform.translate(-100, -100, -100);
+				//model.transform.translate(-100, -100, -100);
+				model.transform.visible = true;
+				updateInfo();
 				model.visible = true;
 			}
 	
@@ -1268,7 +1280,9 @@ function hideSubModels(model)
 	//	alert(subModel.transform.name + ' inside ' + model.transform.name);
 		
 	//	alert('hiding ' + subModel.transform.name );
-		hide(subModel);
+		if(subModel)
+			if(subModel.drawWith != model.transform.name)
+				hide(subModel);
 		
 		//If child has some submodels within itself. hide those too
 		if(subModel.contains.length >0 )
@@ -1289,12 +1303,15 @@ function occludeModel(model)
 		var subModel = model.contains[i];
 	//	alert(subModel.transform.name + ' inside ' + model.transform.name);
 		
+		/*
 		//alert('showing ' + subModel.transform.name );
 		show(subModel);
 		
 		//Hide all the submodels of the children though
 		if( subModel.contains.length>0 )
 		hideSubModels(subModel);
+		*/
+		revealModel(subModel);		
 	}
 	
 }
@@ -1306,7 +1323,20 @@ function revealModel(model)
 	show(model);
 	//alert(model.transform.name + ' revealed');
 	
-	//and hide all models it contains
+	//Also reveal any models that are drawn with this model
+	// TODO: Why should this be done every time? It would better to store another array to store
+	// all the drawWith objects for each model, iterating just once in setupVisibility tree
+	for(var i=0;i<model.siblings.length;i++){
+		
+		//Show this sibling
+		show( model.siblings[i] );
+		
+		//Hide the sibling's submodels
+		hideSubModels(model.siblings[i]);
+		
+	}
+	
+	//and hide all models that this one contains
 	hideSubModels(model);
 	
 }
@@ -1347,14 +1377,17 @@ function getModelByName(name)
 function Model(o3d_trans)
 {
 	this.transform 		   = o3d_trans;
-	this.name	   			   = null;
+	this.name	   		   = null;
 	this.label_arrows	   = new Array();
 	this.labels			   = new Array();
 	this.num_labels 	   = 0;
 	this.insideOf 		   = null;				//NOTE: that this is only a string parsed from the XML. To get hold of the object within which this
-															// model lies, use the within attribute.	
+												// model lies, use the within attribute.	
 	this.drawWith 		   = null;
-	this.contains   = new Array();
+	
+	this.siblings		   = new Array();		// A list of objects inside this one
+	this.contains   	   = new Array();		// A list of objects that this is drawn with
+	
 	this.visible  			   = true;
 	
 }

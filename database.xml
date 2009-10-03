@@ -160,7 +160,7 @@
 		<model_name>cerebral cortex</model_name>
 		<asset>cerebralcortex.o3dtgz</asset>
 		<insideof>skull</insideof>
-		<draw_with>cerebellum</draw_with>
+		<draw_with>none</draw_with>
 		<label>
 			<label_name>cerebral cortex</label_name>
 			<label_bitmap>cerebral_cortex.png</label_bitmap>
@@ -180,7 +180,7 @@
 	<model>
 		<model_name>cerebellum</model_name>
 		<asset>cerebellum.o3dtgz</asset>
-		<insideof>cerebral cortex</insideof>
+		<insideof>skull</insideof>
 		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>cerebellum</label_name>

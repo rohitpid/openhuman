@@ -1,0 +1,22 @@
+Visibility Tree:
+----------------
+The visibility tree is an abstract representation of the visibility hierarchy of the human body. The human anatomy, on account of the multitude of its constituent organs and parts, cannot be visualised all at once. Hence the program uses a visibility hierarchy to display and label only those parts which are visible at any given point. For eg. when the outer torso of the body is visible, clearly, the heart is not. When the face is visible, the brain is not. Thus, the number of labels visible at any point of time is limited, making the visualization simpler and easier to interact with.
+
+While the logic of the visibility tree is incorporated in the program, it must be supplied by means of 2 key attributes to every model in the XML for the visualization. These parameters are the 'insideof' parameter and the 'draw_with' parameter.
+
+	The insideof parameter:
+	-----------------------
+	This parameter describes what other model the given model resides inside of. For eg. the skull is inside the head. Thus the insideof parameter of 		the skull reads 'head'. Also, the skull itself houses the cerebral cortex and thus the insideof parameter for the cerebral cortex is the skull, 	and so on.
+	Please note that the insideof parameter CANNOT BE LEFT BLANK. If the object does not reside inside another, as is the case with the head, then it 		MUST be set to 'none' in the database.xml file. 
+
+	The way this helps with the visualization is in as Whenever a model is visible, all the models that are contained inside it are hidden. This also 		applies to the labels of the models inside. When a particular model is hidden, then those models inside it become visible along with their labels.
+
+	The draw_with parameter:
+	------------------------
+	This parameter describes a sibling relationship between models in the visibility hierarchy. For eg. the head does contain the eye within it, thus 		the 'insideof' parameter for the eye is head. However, the eye is visible at the same time that the head is. Thus the 'draw_with' parameter for 	the eye is 'head' too. This functionality is used in cases where a submodel is visible from within its encompassing model. 
+
+	Please note that this 'sibling' relationship is not bi-directional. For eg. in the instance above, while the eye's drawn_with parameter is the 		head, the draw_with parameter of the head does not point to the eye. 
+
+	Also, it is VITAL TO ENSURE THAT THE draw_with PARAMETER OF AN OBJECT 'A' 'CONTAINING' ANOTHER OBJECT 'B' WITHIN IT, DOES NOT POINT TO B, EVEN 		THOUGH THE 'draw_with' PARAMETER OF 'B' POINTS TO 'A'. If this is not taken care of while submitting the xml for the model, then in the instance 		above, A will never get hidden, since revealing B will reveal A (as draw_with mandates). 
+
+
