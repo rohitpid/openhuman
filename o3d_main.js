@@ -52,6 +52,7 @@ var g_camera = {
   farPlane: 5000,
   nearPlane:0.1
 };
+var def_camera;
 var g_dragging = false;
 
 //global oH variables
@@ -318,22 +319,19 @@ function initStep3(){
 	//Then all the labels
 	loadLabels();
 	
-	//hide(oH_obj[0]);
 	updateHUDInfo();
-	
-	//Now we do selective label hiding
-	//Initially only the head and eye ought to be visible
-	//show(oH_obj[i]);
+		
 	setupVisibilityTree();
-	
-	//alert('Pause');
 	
 	//We hideall and showall for the occlusion code to hide all internal models
 	hideall();
 	showall();
-	//revealModel(oH_obj[0]);
 	
-
+	//We pause the script to let the models finish loading.
+	//This is because even though the model loader says loading is done, the models still keep loading
+	//We also store the default position of the camera	
+	setTimeout("{	zoomScroller(0.05);	def_camera = copyCam(g_camera);	}",5000);
+	
 }	
 
 function loadModels(reload)
@@ -579,13 +577,15 @@ function storeOriginalCameraView()
 
 function loadOriginalCameraView()
 {
-/*	for(i=0;i<4;i++)
-	{
-		for(j=0;j<4;j++)
-		{
-			g_camera.view[i][j] = oH_originalView[i][j];
-		}
-	}*/
+
+	clearRotations();
+	showall();
+	g_camera = copyCam(def_camera);
+	setClientSize();
+	updateCamera();
+	updateProjection();
+	showall();
+	
 }
 
 function updateInfo()
@@ -638,6 +638,22 @@ function drag(e)
 	}
 }
 
+function clearRotations(){
+	
+	g_lastRot = g_math.matrix4.identity();
+	g_thisRot = g_math.matrix4.identity();
+	
+	for(i=0;i<oH_obj.length;i++)
+	{
+		var meshRot = oH_obj[i].transform.localMatrix;
+		g_math.matrix4.setUpper3x3(meshRot, g_thisRot);
+		oH_obj[i].transform.localMatrix = meshRot;
+	
+	}
+	
+}
+
+
 function stopDragging(e)
 {
 	g_dragging = false;
@@ -659,12 +675,42 @@ function updateProjection()
 	g_math.degToRad(45), g_o3dWidth / g_o3dHeight, g_camera.nearPlane,
 	g_camera.farPlane);
 }
+
+function focusCameraOn(model){
+	//Focus the camera on any of the oH_obj
+	//The required parameter is a Model object
+	
+			var bbox = o3djs.util.getBoundingBoxOfTree(model.transform);
+
+			g_camera.target = g_math.lerpVector(bbox.minExtent, bbox.maxExtent, 0.5);
+
+			var diag = g_math.length(g_math.subVector(bbox.maxExtent,bbox.minExtent));
+
+			g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1.0 * diag]);
+			g_camera.nearPlane = diag / 1000;
+			g_camera.farPlane = diag * 10;
+			setClientSize();
+			updateCamera();
+			updateProjection();
+}
+
 /*
 function enableInput(enable)
 {
 	document.getElementById("url").disabled = !enable;
 	document.getElementById("load").disabled = !enable;
 }*/
+function copyCam(orig){
+	
+	var copy = new Object();
+	copy.eye = orig.eye.slice(0);
+	copy.target = orig.target.slice(0);
+	copy.nearPlane = orig.nearPlane;
+	copy.farPlane = orig.farPlane;
+		
+	return copy;	
+}
+
 
 function setClientSize()
 {
@@ -1343,6 +1389,7 @@ function revealModel(model)
 
 function resetView()
 {
+	/*
 	var bbox = o3djs.util.getBoundingBoxOfTree(g_client.root);
 
 	g_camera.target = g_math.lerpVector(bbox.minExtent, bbox.maxExtent, 0.5);
@@ -1352,6 +1399,9 @@ function resetView()
 	g_camera.eye = g_math.addVector(g_camera.target, [0, 0, 1 * diag]);
 	g_camera.nearPlane = diag / 1000;
 	g_camera.farPlane = diag * 10;
+	*/
+	
+	g_camera = copyCam(def_camera);
 	setClientSize();
 	updateCamera();
 	updateProjection();
@@ -1754,6 +1804,9 @@ function loadTexture(loader, filename) {
     }
   }
 }
+
+
+
 
 /*
 *	The following RGB-HSV code is courtesy of Matt Haynes
