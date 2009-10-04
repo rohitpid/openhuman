@@ -202,7 +202,7 @@
 		<model_name>corpus callosum</model_name>
 		<asset>corpuscallosum.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>none</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>corpus callosum</label_name>
 			<label_bitmap>corpus_callosum.png</label_bitmap>
@@ -223,7 +223,7 @@
 		<model_name>thalamus</model_name>
 		<asset>thalamus.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>none</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>thalamus</label_name>
 			<label_bitmap>thalamus.png</label_bitmap>
@@ -244,7 +244,7 @@
 		<model_name>medulla oblongata</model_name>
 		<asset>medulla_oblongata.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>pons</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>medulla oblongata</label_name>
 			<label_bitmap>medulla_oblongata.png</label_bitmap>
@@ -265,7 +265,7 @@
 		<model_name>pons</model_name>
 		<asset>pons.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>medulla oblongata</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>pons</label_name>
 			<label_bitmap>pons.png</label_bitmap>
@@ -286,7 +286,7 @@
 		<model_name>pituitary</model_name>
 		<asset>pituitary.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>hypothalamus</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>pituitary</label_name>
 			<label_bitmap>pituitary.png</label_bitmap>
@@ -307,7 +307,7 @@
 		<model_name>hypothalamus</model_name>
 		<asset>hypothalamus.o3dtgz</asset>
 		<insideof>cerebral cortex</insideof>
-		<draw_with>thalamus</draw_with>
+		<draw_with>cerebral cortex</draw_with>
 		<label>
 			<label_name>hypothalamus</label_name>
 			<label_bitmap>hypothalamus.png</label_bitmap>
