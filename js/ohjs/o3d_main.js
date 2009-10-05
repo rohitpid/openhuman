@@ -126,7 +126,7 @@ var oH_obj_named_array = [];
 var LABEL_SIZE_FACTOR = 1;
 
 /**
- * Creates the client area.
+ * init() Creates the client area.
  */
 function init()
 {
@@ -300,6 +300,12 @@ function initStep2(clientElements)
 	
 }
 
+/**
+ * initStep3() performs the 3rd stage of loading
+ * and loads models and labels after the loading 
+ * of the bitmaps is performed by the loader at the
+ * end of initStep2.
+ */
 function initStep3()
 {
 
@@ -336,6 +342,12 @@ function initStep3()
 	
 }
 
+/**
+ * Function description
+ * @Param {type}
+ * @return {type}
+ * @see
+ */
 function updateInfo()
 {
 	if (!g_treeInfo) 
@@ -345,6 +357,12 @@ function updateInfo()
 	g_treeInfo.update();
 }
 
+/**
+ * Function description
+ * @Param {type}
+ * @return {type}
+ * @see
+ */
 function clearRotations()
 {
 	
@@ -386,7 +404,9 @@ function setClientSize()
 }
 
 /**
- *  Called every frame.
+ *  onRender() is called every frame. We execute flashing here
+ *  and we call setClientSize to ensure our div is sized proportional
+ *  to the window that it is in.
  */
 function onRender(renderEvent)
 {
