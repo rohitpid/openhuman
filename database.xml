@@ -186,12 +186,12 @@
 			<label_name>cerebellum</label_name>
 			<label_bitmap>cerebellum.png</label_bitmap>
 			<position>a
-				<x>-0.85</x>
-				<y>-0.2</y>
-				<z>1.29</z>
-				<normal_x>-0.42</normal_x>
-				<normal_y>-0.26</normal_y>
-				<normal_z>-0.87</normal_z>
+				<x>-0.76</x>
+				<y>0.71</y>
+				<z>1.11</z>
+				<normal_x>-0.80</normal_x>
+				<normal_y>0.43</normal_y>
+				<normal_z>-0.41</normal_z>
 			</position>
 			<summary>The cerebellum (Latin for little brain) is a region of the brain that plays an important role in the integration of sensory perception, coordination and motor control.</summary>
 			<link>http://en.wikipedia.org/wiki/Cerebellum</link>
