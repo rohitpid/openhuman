@@ -1,0 +1,26 @@
+Where the binary files went
+
+ circularbutton6.png => assets/images/circularbutton6.png (100%)
+ circularbutton7.png => assets/images/circularbutton7.png (100%)
+ openhuman_screenshot.png => assets/images/openhuman_screenshot.png (100%)
+ openhumanlogo_black.png => assets/images/openhumanlogo_black.png (100%)
+ openhumanlogo_white.png => assets/images/openhumanlogo_white.png (100%)
+ select.gif => assets/images/select.gif (100%)
+
+Where CSS files went
+
+ default.css => css/default.css (100%)
+ frontpage.css => css/frontpage.css (100%)
+
+Javascript Files all moved to js/ohjs and split
+
+ js/ohjs/camera_functions.js
+ js/ohjs/hud.js
+ js/ohjs/interaction_functions.js
+ js/ohjs/labels.js
+ js/ohjs/model_functions.js
+ js/ohjs/model_highlighting.js
+ js/ohjs/visibility.js
+ js/ohjs/picking_functions.js
+ o3d_main.js => js/ohjs/o3d_main.js
+ uielements.js => js/ohjs/uielements.js (100%)
