@@ -1,0 +1,111 @@
+This is the list of all the functions in the files. It will be obsoleted by the jsdoc when that is completed.
+
+o3d_main.js
+{
+	function init()
+	function initStep2(clientElements)
+	function initStep3()
+	function updateInfo()
+------------------------------------------------
+	//Where should the function below go?
+	function clearRotations()
+------------------------------------------------
+	//function enableInput(enable) function is commented out
+	function setClientSize()
+	function onRender(renderEvent)
+	function uninit()
+}
+
+hud.js
+{
+	function updateHUDInfo()
+	function hudMouseHandler(e)
+}
+
+camera_functions.js
+{
+	function storeOriginalCameraView()
+	function loadOriginalCameraView()
+	function updateCamera()
+	function updateProjection()
+	function focusCameraOn(model)
+	function copyCam(orig)
+}
+
+labels.js
+{
+	function loadLabels()
+	function removeLabels()
+	Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
+	function LabelArrow(loc,nor,attachTo)
+	LabelArrow.prototype.drawArrow = function(loc,nor)
+	//LabelArrow.prototype.hideArrow() =function() this method is commented out and needs to be fixed
+	function Label( position, attachTo, bitmap)
+	function LabelImage(texture, opt_topLeft,attachTo,name)
+	LabelImage.prototype.setColor = function(r, g, b, a)
+	function loadTexture(loader, filename)
+	{
+		function rememberTexture(texture, exception)
+	}
+	--------------------------------------------------------------------------------------------------
+	//The below function should really be in model_functions.js but for some reason this does not work.
+	function Model(o3d_trans)
+}
+
+model_functions.js
+{
+	function loadModels(reload)
+	function loadFile(context, path)
+}
+
+model_highlighting.js
+{
+	function highlight(model_shape,mode)
+	function highlightMesh(mode)
+	function setupHighlightMeshMaterial(g_selectedMesh)
+	function highlightMeshMaterial()
+	function restoreMeshMaterial()
+	function hsvToRgb(h,s,v)
+	function rgbToHsv(r, g, b)
+}
+
+picking_functions.js
+{
+	function stopDragging(e)
+	function startDragging(e)
+	function drag(e)
+	function pick(e)
+	function dbg_pointOfClick(point,normal)
+}
+
+uielements.js
+{
+	JQuery calls to control the UI elements.
+}
+
+visibility.js
+{
+	function setupVisibilityTree()
+	function hideSubModels(model)
+	function occludeModel(model)
+	function revealModel(model)
+	function getParentModel(transform)
+	function getModelByName(name)
+}
+
+interaction_functions.js
+{
+	function pan(x,y,z)
+	function scale(scaleValue)
+	function zoomScroller(t)
+	function scrollMe(e)
+	function buttonRotate(e)
+	function buttonRotation(angle,axis)
+-------------------------------------------------
+	//Maybe the functions below should be split into another js file
+	function resetView()
+	function hide(model)
+	function show(model)
+	function hideall()
+	function showall()
+}

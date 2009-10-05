@@ -59,7 +59,8 @@ function updateProjection()
 	g_camera.farPlane);
 }
 
-function focusCameraOn(model){
+function focusCameraOn(model)
+{
 	//Focus the camera on any of the oH_obj
 	//The required parameter is a Model object
 	
@@ -77,7 +78,8 @@ function focusCameraOn(model){
 			updateProjection();
 }
 
-function copyCam(orig){
+function copyCam(orig)
+{
 	
 	var copy = new Object();
 	copy.eye = orig.eye.slice(0);

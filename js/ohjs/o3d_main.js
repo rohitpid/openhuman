@@ -137,7 +137,8 @@ function init()
  * Initializes O3D and loads the scene into the transform graph.
  * @param {Array} clientElements Array of o3d object elements.
  */
-function initStep2(clientElements){
+function initStep2(clientElements)
+{
 	//Load the XML file database.xml to xmlDoc
 	//so that we can parse data for models and labels later
 	if (window.XMLHttpRequest) {
@@ -299,7 +300,8 @@ function initStep2(clientElements){
 	
 }
 
-function initStep3(){
+function initStep3()
+{
 
 	/*
 	//REMOVE THIS IF WE CAN DO AWAY WITH THE LOADER CODE
@@ -343,7 +345,8 @@ function updateInfo()
 	g_treeInfo.update();
 }
 
-function clearRotations(){
+function clearRotations()
+{
 	
 	g_lastRot = g_math.matrix4.identity();
 	g_thisRot = g_math.matrix4.identity();
@@ -385,7 +388,7 @@ function setClientSize()
 /**
  *  Called every frame.
  */
-function onRender(renderEvent) 
+function onRender(renderEvent)
 {
 	// If we don't check the size of the client area every frame we don't get a
 	// chance to adjust the perspective matrix fast enough to keep up with the
@@ -478,7 +481,7 @@ function onRender(renderEvent)
 /**
  * Removes any callbacks so they don't get called after the page has unloaded.
  */
-function uninit() 
+function uninit()
 {
 		
 	if (g_client)

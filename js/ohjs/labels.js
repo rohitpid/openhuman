@@ -93,7 +93,8 @@ function LabelArrow(loc,nor,attachTo)
 		
 }
 
-LabelArrow.prototype.drawArrow = function(loc,nor){
+LabelArrow.prototype.drawArrow = function(loc,nor)
+{
 		
 		/*
 		* Code to draw the arrows to the labels
@@ -275,9 +276,8 @@ LabelArrow.prototype.hideArrow() =function(){
 
 */
 
-function Label( position, attachTo, bitmap){
-	
-	
+function Label( position, attachTo, bitmap)
+{
 	this.position	 = position;
 	this.attachTo	 = attachTo;
 	this.labelHolder = g_pack.createObject('Transform');
@@ -306,7 +306,8 @@ function Label( position, attachTo, bitmap){
  * @param {Object} attachTo Parent Transform to attach this image to
  * 
  */
-function LabelImage(texture, opt_topLeft,attachTo,name) {
+function LabelImage(texture, opt_topLeft,attachTo,name)
+{
 
       
    	var baseWidth  = 0.6; //Corresponds to the width with which the 'head' label appears most pleasing (arguably)
@@ -398,7 +399,8 @@ function LabelImage(texture, opt_topLeft,attachTo,name) {
  * @param {number} b Blue component.
  * @param {number} a Alpha component.
  */
-LabelImage.prototype.setColor = function(r, g, b, a) {
+LabelImage.prototype.setColor = function(r, g, b, a)
+{
   this.paramColorMult.set(r, g, b, a);
 };
 
@@ -409,7 +411,8 @@ LabelImage.prototype.setColor = function(r, g, b, a) {
  * @param {number} index Index to put texture in g_textures
  * 
  */
-function loadTexture(loader, filename) {
+function loadTexture(loader, filename)
+{
   loader.loadTexture(g_pack,
                      o3djs.util.getAbsoluteURI( filename),
                      rememberTexture);
