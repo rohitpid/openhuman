@@ -89,7 +89,7 @@ button.fg-button .ui-icon{ left: -1.2em;}
 	left: 138px;
 	width: 11px;
 	height: 11px;
-	background-image: url(select.gif);
+	background-image: url(../assets/images/select.gif);
 	cursor: move;
 	overflow: hidden;
 }
@@ -176,7 +176,7 @@ span.invisible
 {
 	height: 100px;
 	width: 100px;
-	background-image: url(circularbutton7.png);
+	background-image: url(../assets/images/circularbutton7.png);
 	position: relative;
 /*	left: 110px; */
 	top: 20px;
@@ -187,7 +187,7 @@ span.invisible
 {
 	height: 75px;
 	width: 75px;
-	background-image: url(circularbutton6.png);
+	background-image: url(../assets/images/circularbutton6.png);
 	position: relative;
 /*	left: 220px; */
 	top: 5px;

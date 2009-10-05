@@ -16,16 +16,23 @@
 <html>
     <head>
         <title>Open Human o3d</title>
-	<link rel="stylesheet" href="default.css" type="text/css" media="screen"></style>
+	<link rel="stylesheet" href="css/default.css" type="text/css" media="screen"></style>
 	<!-- Set the path to the c3dl library and load the script -->
 	<script type="text/javascript" src="o3djs/base.js"></script>
 	<script type="application/javascript" src="js/jquery-1.3.2.min.js" ></script>
 	<script type="application/javascript" src="js/jquery-ui-1.7.2.custom.min.js" ></script>
 	<link rel="stylesheet" href="css/ui-darkness/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" /> 
-	<script type="application/javascript" src="floatingbrowsers.js"></script>
-	<script type="application/javascript" src="uielements.js"></script>
 	<script type="application/javascript" src="interface1.2/interface.js"></script>
-	<script type="application/javascript" src="o3d_main.js"></script>
+	<script type="application/javascript" src="js/ohjs/o3d_main.js"></script>
+	<script type="application/javascript" src="js/ohjs/uielements.js"></script>
+	<script type="application/javascript" src="js/ohjs/camera_functions.js"></script>
+	<script type="application/javascript" src="js/ohjs/hud.js"></script>
+	<script type="application/javascript" src="js/ohjs/interaction_functions.js"></script>
+	<script type="application/javascript" src="js/ohjs/labels.js"></script>
+	<script type="application/javascript" src="js/ohjs/model_functions.js"></script>
+	<script type="application/javascript" src="js/ohjs/model_highlighting.js"></script>
+	<script type="application/javascript" src="js/ohjs/picking_functions.js"></script>
+	<script type="application/javascript" src="js/ohjs/visibility.js"></script>
     </head>
     <body oncontextmenu="return false;" onload="init();" onunload="uninit();">
     	
@@ -90,9 +97,9 @@
 	<div id="container">
 		<div id="top" class="ui-widget-header ui-corner-all" align=center>
 			<h1 class="serif">
-				<img src="openhumanlogo_white.png" style="display: inline-block; height: 25px; width: 30px; -webkit-transform: rotate(90deg); -moz-transform: rotate(90deg); filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);;"></img>
+				<img src="assets/images/openhumanlogo_white.png" style="display: inline-block; height: 25px; width: 30px; -webkit-transform: rotate(90deg); -moz-transform: rotate(90deg); filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);;"></img>
 				Open Human
-				<img src="openhumanlogo_white.png" style="display: inline-block; height: 25px; width: 30px;"></img>
+				<img src="assets/images/openhumanlogo_white.png" style="display: inline-block; height: 25px; width: 30px;"></img>
 			</h1>
 		</div>
 		<div id="leftnav">

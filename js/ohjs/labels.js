@@ -422,5 +422,3 @@ function loadTexture(loader, filename) {
     }
   }
 }
-
-

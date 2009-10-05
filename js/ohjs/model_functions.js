@@ -177,21 +177,3 @@ function loadFile(context, path)
 	return mesh;
 	
 }
-
-function Model(o3d_trans)
-{
-	this.transform 		   = o3d_trans;
-	this.name	   		   = null;
-	this.label_arrows	   = new Array();
-	this.labels			   = new Array();
-	this.num_labels 	   = 0;
-	this.insideOf 		   = null;				//NOTE: that this is only a string parsed from the XML. To get hold of the object within which this
-												// model lies, use the within attribute.	
-	this.drawWith 		   = null;
-	
-	this.siblings		   = new Array();		// A list of objects inside this one
-	this.contains   	   = new Array();		// A list of objects that this is drawn with
-	
-	this.visible  			   = true;
-	
-}
