@@ -83,7 +83,7 @@
    * Pixel Shader
    */
   float4 pixelShaderFunction(PixelShaderInput input): COLOR {
-    return tex2D(texSampler0, input.texcoord * 5) + float4(0.2, 0.2, 0.0, 1.0);
+    return tex2D(texSampler0, input.texcoord) + float4(0.2, 0.2, 0.0, 1.0);
   }
  
   // Here we tell our effect file the functions which specify our vertex

@@ -60,10 +60,13 @@ function removeLabels()
 	}
 }
 
-Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
+Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link,toModel)
 {
 	///add a label arrow first
-	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform );
+	if(labelDebug)	//If in debug mode, the toModel argument shows which model this arrow is being added to
+	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform,toModel );
+	else
+	this.label_arrows[this.num_labels] = new LabelArrow( pos,norm,this.transform);
 
 	//add a label
 	this.labels[this.num_labels]	 = new Label(this.label_arrows[this.num_labels].labelPos,this.transform,bitmap);
@@ -80,7 +83,7 @@ Model.prototype.addLabel = function(name,bitmap,pos,norm,summary,link)
 };
 
 
-function LabelArrow(loc,nor,attachTo)
+function LabelArrow(loc,nor,attachTo,toModel)
 {
 	this.attachTo = attachTo;
 		this.labelArrowTransform  = g_pack.createObject('Transform');		
@@ -88,12 +91,15 @@ function LabelArrow(loc,nor,attachTo)
 		
 		this.pos = loc;
 		this.nor = nor;
-		this.drawArrow(this.pos,this.nor);
 		
+		if(labelDebug)	//If in debug mode, the toModel argument shows which model this arrow is being added to
+		this.drawArrow(this.pos,this.nor,toModel);
+		else
+		this.drawArrow(this.pos,this.nor);
 		
 }
 
-LabelArrow.prototype.drawArrow = function(loc,nor)
+LabelArrow.prototype.drawArrow = function(loc,nor,toModel)
 {
 		
 		/*
@@ -136,9 +142,26 @@ LabelArrow.prototype.drawArrow = function(loc,nor)
 									
 			// Get the world position of the collision.
 			worldPosition = nor.worldIntersectionPosition;
-					
+						
+			//Note that this point of click (worldPosition) and normal (summedNormal) 
+			//have to now be inverse transformed by the corresponding model's transform (localmatrix)
+			//so as to yield the correct point in world coordinates at startup		
+			//NOTE here that the subsequent drawing of the arrow is still done with	summedNormal and worldPosition
+			//however what is sent for display in debug info is the transformedNormal and transformedClickPos
+			//ALSO NOTE that an implicit assumption is made here that all the model's transforms are directly connected
+			//to root. If later we arrange models hierarchiall within sub-transforms of one another, then the following
+			//code will have to be rewritten to recurse through each of the parent transforms till they get to
+			//g_client.root
+			var transformedNormal;
+			var transformedClickPos;			
+			
+			transformedNormal  = g_math.matrix4.transformNormal(g_math.matrix4.inverse(toModel.transform.localMatrix),
+														   summedNormal);												  
+			transformedClickPos= g_math.matrix4.transformPoint(g_math.matrix4.inverse(toModel.transform.localMatrix),
+														  worldPosition);	
+														  	
 			//display the point at debug output
-			dbg_pointOfClick(worldPosition,summedNormal);
+			dbg_pointOfClick(transformedClickPos,transformedNormal);
 		
 			
 		}

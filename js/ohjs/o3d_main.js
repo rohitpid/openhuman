@@ -105,6 +105,8 @@ var g_debugHelper;
 var g_debugLineGroup;
 var g_debugLine;
 var NORMAL_SCALE_FACTOR = 1.0;
+var debug_arrows_transform_array = [];
+
 
 var labelArrowTransform;
 var labelArrowShape;
@@ -120,6 +122,8 @@ var oH_Logo;
 var billboardMaterial;
 var g_globalParams;
 var tempTex;
+
+
 
 var oH_obj_named_array = [];
 
@@ -166,7 +170,9 @@ function initStep2(clientElements)
 	g_debugHelper = o3djs.debug.createDebugHelper(g_client.createPack(), g_viewInfo);
 	g_debugLineGroup = g_debugHelper.createDebugLineGroup(g_client.root);
 	g_debugLine = g_debugLineGroup.addLine();
-	g_debugLine.setColor([0, 1, 0, 1]);
+	g_debugLine.setColor([0, 1, 0, 1]);	
+	
+	debug_arrows_transform_array = new Array();
 	
 	g_lastRot = g_math.matrix4.identity();
 	g_thisRot = g_math.matrix4.identity();
@@ -215,6 +221,7 @@ function initStep2(clientElements)
 	g_highlightMaterial.state = state;
 	origMaterial = new Array();
 	g_highlightShape = null;
+	
 	
 	/*************HUD IMPLEMENTATION**************************/
 	

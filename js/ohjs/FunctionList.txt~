@@ -70,7 +70,10 @@ model_highlighting.js
 }
 
 picking_functions.js
-{	
+{
+	function stopDragging(e)
+	function startDragging(e)
+	function drag(e)
 	function pick(e)
 	function dbg_pointOfClick(point,normal)
 }
@@ -105,9 +108,4 @@ interaction_functions.js
 	function show(model)
 	function hideall()
 	function showall()
----------------------------------------------------
-	function stopDragging(e)
-	function startDragging(e)
-	function drag(e)
-
 }

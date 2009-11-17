@@ -32,6 +32,11 @@ function scale(scaleValue)
 
 	for(i=0;i<oH_obj.length;i++)
 	oH_obj[i].transform.scale(scaleValue,scaleValue,scaleValue);
+		
+	//for(i=0;i<debug_arrows_transform_array.length;i++)
+	//debug_arrows_transform_array[i].scale(scaleValue,scaleValue,scaleValue);
+	
+	
 }
 
 function zoomScroller(t)
@@ -106,6 +111,9 @@ function buttonRotation(angle,axis)
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationX(-angle));
 
+	//	for(i=0;i<debug_arrows_transform_array.length;i++)
+	//	debug_arrows_transform_array[i].quaternionRotate(g_quaternions.rotationX(-angle));
+		
 		rotationQuat = g_quaternions.rotationX(-angle);
 	}
 	else if (axis == 1) {
@@ -113,12 +121,18 @@ function buttonRotation(angle,axis)
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationY(angle));
 
+	//	for(i=0;i<debug_arrows_transform_array.length;i++)
+	//	debug_arrows_transform_array[i].quaternionRotate(g_quaternions.rotationY(angle));
+		
 		rotationQuat = g_quaternions.rotationY(angle);
 	}
 	else {
 
 		for(i=0;i<oH_obj.length;i++)
 		oH_obj[i].transform.quaternionRotate(g_quaternions.rotationZ(angle));
+		
+	//	for(i=0;i<debug_arrows_transform_array.length;i++)
+		debug_arrows_transform_array[i].quaternionRotate(g_quaternions.rotationZ(angle));
 
 		rotationQuat = g_quaternions.rotationZ(angle);
 	}
@@ -245,4 +259,41 @@ function showall()
 		}
 	}
 	
+}
+
+
+function stopDragging(e)
+{
+	g_dragging = false;
+}
+
+function startDragging(e)
+{
+	g_lastRot = g_thisRot;
+	g_aball.click([e.x, e.y]);
+	g_dragging = true;
+//	if(e.shiftKey)
+	pick(e);
+}
+
+
+function drag(e)
+{
+	if (g_dragging)
+	{
+		var rotationQuat = g_aball.drag([e.x, e.y]);
+		var rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
+		g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
+
+			
+
+		for(i=0;i<oH_obj.length;i++)
+		{
+			var meshRot = oH_obj[i].transform.localMatrix;
+			g_math.matrix4.setUpper3x3(meshRot, g_thisRot);
+			oH_obj[i].transform.localMatrix = meshRot;
+		
+		}		
+	
+	}
 }

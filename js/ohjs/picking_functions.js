@@ -13,41 +13,6 @@
  *
  */
 
-function stopDragging(e)
-{
-	g_dragging = false;
-}
-
-function startDragging(e)
-{
-	g_lastRot = g_thisRot;
-	g_aball.click([e.x, e.y]);
-	g_dragging = true;
-//	if(e.shiftKey)
-	pick(e);
-}
-
-function drag(e)
-{
-	if (g_dragging)
-	{
-		var rotationQuat = g_aball.drag([e.x, e.y]);
-		var rot_mat = g_quaternions.quaternionToRotation(rotationQuat);
-		g_thisRot = g_math.matrix4.mul(g_lastRot, rot_mat);
-
-			
-
-		for(i=0;i<oH_obj.length;i++)
-		{
-			var meshRot = oH_obj[i].transform.localMatrix;
-			g_math.matrix4.setUpper3x3(meshRot, g_thisRot);
-			oH_obj[i].transform.localMatrix = meshRot;
-		
-		}
-	
-	}
-}
-
 function pick(e)
 {
 	
@@ -97,6 +62,7 @@ function pick(e)
 	{
 
 		g_selectedInfo = pickInfo;
+		var selectedModel;
 
 		for(i=0;i<oH_obj.length;i++)
 		{
@@ -107,6 +73,7 @@ function pick(e)
 				g_loadingElement.innerHTML = "You clicked on the "+oH_obj[i].labels[0].name + "<br><br>" + 
 				oH_obj[i].labels[0].summary + "... <br></br>"+"<a target='_blank' href="+
 				oH_obj[i].labels[0].link+">Click to open full article at Wikipedia</a>";
+				selectedModel = oH_obj[i];
 			}
 			
 		}
@@ -115,8 +82,11 @@ function pick(e)
 		{
 			//We create a fake model whose constructor draws an arrow. We do that by passing the root transform directly
 			//So there is no mesh involved. Also in place of normal we send the pickinfo object
-			fakeTestModel = new Model( g_client.root );
-			fakeTestModel.addLabel("debug","bitmap",[0,0,0],pickInfo,"summary","link");
+			debug_arrows_transform_array[debug_arrows_transform_array.length] 		   = g_pack.createObject('Transform');
+			debug_arrows_transform_array[debug_arrows_transform_array.length-1].parent = g_client.root;
+			
+			fakeTestModel = new Model( debug_arrows_transform_array[debug_arrows_transform_array.length-1] );
+			fakeTestModel.addLabel("debug","bitmap",[0,0,0],pickInfo,"summary","link",selectedModel);
 		}
 		
 		

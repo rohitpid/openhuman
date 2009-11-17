@@ -186,12 +186,12 @@
 			<label_name>cerebellum</label_name>
 			<label_bitmap>cerebellum.png</label_bitmap>
 			<position>a
-				<x>-0.76</x>
-				<y>0.71</y>
-				<z>1.11</z>
-				<normal_x>-0.80</normal_x>
-				<normal_y>0.43</normal_y>
-				<normal_z>-0.41</normal_z>
+				<x>0.29</x>
+				<y>1.13</y>
+				<z>-0.9</z>
+				<normal_x>-0.74</normal_x>
+				<normal_y>0.61</normal_y>
+				<normal_z>0.3</normal_z>
 			</position>
 			<summary>The cerebellum (Latin for little brain) is a region of the brain that plays an important role in the integration of sensory perception, coordination and motor control.</summary>
 			<link>http://en.wikipedia.org/wiki/Cerebellum</link>
@@ -207,12 +207,12 @@
 			<label_name>corpus callosum</label_name>
 			<label_bitmap>corpus_callosum.png</label_bitmap>
 			<position>
-				<x>0.19</x>
-				<y>0.95</y>
-				<z>1.28</z>
-				<normal_x>0.01</normal_x>
-				<normal_y>0.91</normal_y>
-				<normal_z>0.42</normal_z>
+				<x>-0.1</x>
+				<y>1.61</y>
+				<z>-0.07</z>
+				<normal_x>0.18</normal_x>
+				<normal_y>0.48</normal_y>
+				<normal_z>0.86</normal_z>
 			</position>
 			<summary>The corpus callosum is a structure of the mammalian brain in the longitudinal fissure that connects the left and right cerebral hemispheres. It facilitates communication between the two hemispheres. It is the largest white matter structure in the brain, consisting of 200-250 million contralateral axonal projections.</summary>
 			<link>http://en.wikipedia.org/wiki/Corpus_callosum</link>
@@ -228,12 +228,12 @@
 			<label_name>thalamus</label_name>
 			<label_bitmap>thalamus.png</label_bitmap>
 			<position>
-				<x>-0.01</x>
-				<y>0.97</y>
-				<z>0.67</z>
-				<normal_x>0.88</normal_x>
-				<normal_y>-0.02</normal_y>
-				<normal_z>0.48</normal_z>
+				<x>-0.28</x>
+				<y>1.21</y>
+				<z>-0.1</z>
+				<normal_x>-0.92</normal_x>
+				<normal_y>0.13</normal_y>
+				<normal_z>0.36</normal_z>
 			</position>
 			<summary>The thalamus (from Greek θάλαμος = room, chamber, IPA= /ˈθæləməs/) is a midline paired symmetrical structure within the brain of vertebrate animals, including humans. Its function includes relaying sensation and special sense signals to the cerebral cortex, relaying motor signals to the cerebral cortex, and the regulation of consciousness, sleep and alertness.</summary>
 			<link>http://en.wikipedia.org/wiki/Thalamus</link>
@@ -249,12 +249,12 @@
 			<label_name>medulla oblongata</label_name>
 			<label_bitmap>medulla_oblongata.png</label_bitmap>
 			<position>
-				<x>0.5</x>
-				<y>0.1</y>
-				<z>-0.05</z>
-				<normal_x>-0.89</normal_x>
-				<normal_y>-0.36</normal_y>
-				<normal_z>0.29</normal_z>
+				<x>-0.56</x>
+				<y>0.59</y>
+				<z>-0.71</z>
+				<normal_x>-0.69</normal_x>
+				<normal_y>-0.56</normal_y>
+				<normal_z>0.45</normal_z>
 			</position>
 			<summary>The medulla oblongata is the lower half of the brainstem. The medulla contains the cardiac, respiratory, vomiting and vasomotor centers and deals with autonomic functions, such as breathing, heart rate and blood pressure.</summary>
 			<link>http://en.wikipedia.org/wiki/Medulla_oblongata</link>
@@ -291,12 +291,12 @@
 			<label_name>pituitary</label_name>
 			<label_bitmap>pituitary.png</label_bitmap>
 			<position>
-				<x>-0.24</x>
-				<y>0.58</y>
-				<z>0.26</z>
-				<normal_x>0.94</normal_x>
-				<normal_y>0.01</normal_y>
-				<normal_z>0.34</normal_z>
+				<x>0.06</x>
+				<y>0.63</y>
+				<z>0.22</z>
+				<normal_x>0.98</normal_x>
+				<normal_y>0.12</normal_y>
+				<normal_z>0.19</normal_z>
 			</position>
 			<summary>The pituitary gland, or hypophysis, is an endocrine gland about the size of a pea and weighing 0.5 g (0.02 oz.). The pituitary gland secretes hormones regulating homeostasis, including tropic hormones that stimulate other endocrine glands.</summary>
 			<link>http://en.wikipedia.org/wiki/Pituitary</link>
@@ -312,12 +312,12 @@
 			<label_name>hypothalamus</label_name>
 			<label_bitmap>hypothalamus.png</label_bitmap>
 			<position>
-				<x>-0.18</x>
-				<y>0.85</y>
-				<z>0.31</z>
-				<normal_x>0.84</normal_x>
-				<normal_y>0.01</normal_y>
-				<normal_z>0.53</normal_z>
+				<x>0.11</x>
+				<y>0.9</y>
+				<z>0.18</z>
+				<normal_x>0.95</normal_x>
+				<normal_y>-0.09</normal_y>
+				<normal_z>-0.3</normal_z>
 			</position>
 			<summary>Located below the thalamus and above the brainstem, the hypothalamus is a portion of the brain that contains a number of small nuclei with a variety of functions. One of the most important functions of the hypothalamus is to link the nervous system to the endocrine system via the pituitary gland (hypophysis).</summary>
 			<link>http://en.wikipedia.org/wiki/Hypothalamus</link>
